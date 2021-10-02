@@ -2,26 +2,32 @@
 
 from obspy.clients.fdsn import Client
 from obspy import UTCDateTime
+from functools import reduce
+from scipy.io import savemat
 
 client = Client("GFZ")
 
 t0 = UTCDateTime("2014-02-27T06:45:00.000")
 t1 = t0 + 4 * 60
 
-#st = client.get_waveforms("IU", "ANMO", "00", "LHZ", t, t + 60 * 60)
+stations = [["IS", "MMA*"], ["IS", "MMB*"], ["IS", "MMC*"]]
 
-inventoryA = client.get_stations(network="IS", station="MMA*", level="response")
+add_4_mins = lambda x: x + 4 * 60
 
-inventoryB = client.get_stations(network="IS", station="MMB*", level="response")
+def query_data(network, station, starttime, endtime, level="response"):
+    inv = client.get_stations(network=network, station=station, level=level).get_contents().get('channels')
+    bulk = list(map(lambda x: x.split('.'), inv))
+    list(map(lambda x: x.extend([starttime, endtime]), bulk))
+    return client.get_waveforms_bulk(bulk)
 
-inventoryC = client.get_stations(network="IS", station="MMC*", level="response")
+def wrapper(func, arg_list):
+    return lambda starttime: func(*arg_list, starttime, add_4_mins(starttime))
 
-channel_seedsA = inventoryA.get_contents().get('channels')
+choose_time = lambda starttime: reduce(lambda x,y: x+y, map(lambda station: wrapper(query_data, station)(starttime), stations))
+stream = choose_time(t0)
+#print(stream)
 
-channel_seedsB = inventoryB.get_contents().get('channels')
-
-channel_seedsC = inventoryC.get_contents().get('channels')
-
-result = list(map(lambda x: x.split('.'), channel_seedsA))
-list(map(lambda x: x.extend([t0, t1]), result))
-st = client.get_waveforms_bulk(result)
+for i, tr in enumerate(stream):
+    mdict = {'station': tr.id}
+    mdict['data'] = tr.data
+    savemat("data-%d.mat" % i, mdict)
