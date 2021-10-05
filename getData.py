@@ -4,13 +4,13 @@ from obspy.clients.fdsn import Client
 from obspy import UTCDateTime
 from functools import reduce
 from scipy.io import savemat
+import numpy as np
 
 client = Client("GFZ")
 
-t0 = UTCDateTime("2014-02-27T06:45:00.000")
-t1 = t0 + 4 * 60
+t0 = UTCDateTime("2016-02-27T06:45:00.000")
 
-stations = [["IS", "MMA*"], ["IS", "MMB*"], ["IS", "MMC*"]]
+stations = [["IS", "MMA*"], ["IS", "MMB*"], ["IS", "MMC*"]] #[networkID, Station Names]
 
 add_4_mins = lambda x: x + 4 * 60
 
@@ -25,9 +25,11 @@ def wrapper(func, arg_list):
 
 choose_time = lambda starttime: reduce(lambda x,y: x+y, map(lambda station: wrapper(query_data, station)(starttime), stations))
 stream = choose_time(t0)
-#print(stream)
+matrix = np.empty((17, 9600))
 
-for i, tr in enumerate(stream):
-    mdict = {'station': tr.id}
-    mdict['data'] = tr.data
-    savemat("data-%d.mat" % i, mdict)
+for i,tr in enumerate(stream):
+    matrix[i] =  tr.data[0:9600]
+
+mdict = {'time': t0}
+mdict['data'] = matrix
+savemat("data.mat", mdict)
