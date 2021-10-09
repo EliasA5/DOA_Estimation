@@ -25,10 +25,10 @@ def wrapper(func, arg_list):
 
 choose_time = lambda starttime: reduce(lambda x,y: x+y, map(lambda station: wrapper(query_data, station)(starttime), stations))
 stream = choose_time(t0)
-matrix = np.empty((17, 9600))
+matrix = np.empty((len(stream), 9600))
 
 for i,tr in enumerate(stream):
-    matrix[i] =  tr.data[0:9600]
+    matrix[i] =  tr.data[(tr.times(reftime=t0) >= 0)][0:9600]
 
 mdict = {'time': t0}
 mdict['data'] = matrix
