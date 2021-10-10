@@ -5,7 +5,7 @@ clc
 %for every time step (1,2,3,...,9600) we calculate the estimation of sigma and R by using
 %all the 17 sensors 
 
-
+%system('conda activate obspy & python getData.py'); %uncomment to run the python data getter
 N1 = 1; % start measurement, end measurement
 N2 = 9600;
 N = N2-N1+1 ; % number of past measurements
