@@ -28,12 +28,15 @@ end
 sigma_squared = 1/(K*N) * sum(sigma_squared_array);
 Rv = 1/N * sum(Rv_array,3);
 
-psi_ = ( det(Rv) / ((trace(Rv)/K)^K) );
-test = -N*log(psi_);
+psi_ = ( det(Rv) / ((trace(Rv)/K)^K) )^(N/2);
+
 
 c = 10^(-10);
-
-A = sigma_squared/test
+co = cov(x.').';
+figure;
+imagesc(db(co));
+figure;
+heatmap(db(co));
 
 
 
