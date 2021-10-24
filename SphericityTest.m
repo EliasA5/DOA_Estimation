@@ -28,6 +28,7 @@ figure;
 heatmap(db(Rv), 'Colormap', bone);
 
 %oldpath = addpath('C:\Users\Elias\Desktop\project\LIBRA', '-end');
+%https://wis.kuleuven.be/stat/robust/LIBRAfiles/LIBRA-home-orig
 mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
 mcdCov = mcdRv.cov;
 figure;
