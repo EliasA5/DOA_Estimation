@@ -6,10 +6,23 @@ from functools import reduce
 from obspy.core.inventory.inventory import read_inventory
 from scipy.io import savemat
 import numpy as np
+from random import randrange
+from datetime import timedelta, datetime
+
+def random_date(start, end):
+    delta = end - start
+    int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
+    random_second = randrange(int_delta)
+    return start + timedelta(seconds=random_second)
 
 client = Client("GFZ")
 
+start_time = datetime(year = 2012, month = 1, day = 1) #.isoformat()
+end_time = datetime(year = 2019, month = 12, day = 30)
+
 t0 = UTCDateTime("2019-01-19T00:00:00.000")
+#t0 = UTCDateTime(random_date(start_time, end_time).isoformat())
+
 
 stations = [["IS", "MMA*"], ["IS", "MMB*"], ["IS", "MMC*"]] #[networkID, Station Names]
 
