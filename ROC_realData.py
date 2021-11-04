@@ -20,7 +20,7 @@ client = Client("GFZ")
 start_time = datetime(year = 2012, month = 1, day = 1) #.isoformat()
 end_time = datetime(year = 2019, month = 12, day = 30)
 
-T0 =[UTCDateTime("2019-01-19T00:00:00.000"),UTCDateTime("2016-05-19T00:00:00.000"),UTCDateTime("2018-01-19T00:00:00.000"),UTCDateTime("2019-07-19T00:00:00.000"),UTCDateTime("2017-9-10T00:00:00.000"),UTCDateTime("2020-01-19T00:00:00.000"),UTCDateTime("2020-6-19T00:00:00.000"),UTCDateTime("2019-01-19T17:00:00.000"),UTCDateTime("2018-3-15T00:00:00.000"),UTCDateTime("2019-12-08T00:00:00.000"),UTCDateTime("2020-02-05T00:00:00.000"),UTCDateTime("2018-09-25T00:00:00.000"),UTCDateTime("2017-04-17T00:00:00.000"),UTCDateTime("2016-11-11T00:00:00.000"),UTCDateTime("2019-05-04T00:00:00.000"),]
+T0 =[UTCDateTime("2019-01-19T00:00:00.000"),UTCDateTime("2016-05-19T00:00:00.000"),UTCDateTime("2018-01-19T00:00:00.000"),UTCDateTime("2019-07-19T00:00:00.000"),UTCDateTime("2017-9-10T00:00:00.000"),UTCDateTime("2020-01-19T00:00:00.000"),UTCDateTime("2020-6-19T00:00:00.000"),UTCDateTime("2019-01-19T17:00:00.000"),UTCDateTime("2018-3-15T00:00:00.000"),UTCDateTime("2019-12-08T00:00:00.000")]
 #t0 = UTCDateTime(random_date(start_time, end_time).isoformat())
 
 
