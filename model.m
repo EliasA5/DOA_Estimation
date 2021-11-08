@@ -5,9 +5,9 @@ function [a] = model(r_m, K_1, K_3, w)
 %k_2 the number of 3d sensors
 %w is a vector of frequencies
 e_u = @(theta,alpha) [sin(theta)*sin(alpha); cos(theta)*cos(alpha); cos(alpha)];
-e_z = @(theta, alpha) e_u(3);
-u = @(theta, alpha, v_0) 1/v0 * e_u(theta,alpha);
-tau = @(theta, alpha, v_0)  r_m * u(theta, alpha, v_0);
-a = @(m, theta, alpha, v_0) [e_u(theta, alpha) .* exp(-1i*w(m) * tau(1:K_3)), e_z(theta,alpha) .* exp(-1i*w(m) * tau(K_3+1:end))];
+e_z = @(theta, alpha) cos(alpha);
+u = @(theta, alpha, v_0) 1/v_0 * e_u(theta,alpha);
+tau = @(r_ms, theta, alpha, v_0)  r_ms * u(theta, alpha, v_0);
+a = @(m, theta, alpha, v_0) [repmat(e_u(theta, alpha), K_3, 1) .* exp(-1i*w(m) * tau(r_m(1:K_3*3, :), theta, alpha, v_0)); e_z(theta,alpha) .* exp(-1i*w(m) * tau(r_m(K_3*3+1:end, :), theta, alpha, v_0))];
 
 end

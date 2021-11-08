@@ -3,7 +3,7 @@
 from obspy.clients.fdsn import Client
 from obspy import UTCDateTime, read_inventory, read
 from functools import reduce
-from obspy.core.inventory.inventory import read_inventory
+from obspy.geodetics.base import gps2dist_azimuth
 from scipy.io import savemat
 import numpy as np
 from random import randrange
@@ -50,15 +50,28 @@ def query_inventories(stations, level = "response"):
 
 choose_time = lambda starttime, endtime: query_data(stations, starttime, endtime)
 stream, inv = choose_time(t0, mins_4(t0))
+temp = stream.pop(0)
+stream.insert(3, temp)
+temp = None
+
 stream.remove_response(output="VEL")
 matrix = np.empty((len(stream), 9600))
+
+channel_metadata = {'format' : ["latitude", "longitude", "elevation", "local_depth", "azimuth", "dip"]}
+distances = np.empty([len(stream), 3])
+ref_sensor = inv.get_channel_metadata(stream[0].get_id())
 
 for i,tr in enumerate(stream):
     if(tr.stats.channel != 'BHZ'):
         tr.filter("highpass", freq=1.0)
-    matrix[i] =  tr.data[(tr.times(reftime=t0) >= 0)][0:9600]
+    meta = inv.get_channel_metadata(tr.get_id())
+    distances[i,:] = [gps2dist_azimuth(ref_sensor['latitude'], ref_sensor['longitude'], meta['latitude'], ref_sensor['longitude'])[0], gps2dist_azimuth(ref_sensor['latitude'], ref_sensor['longitude'], ref_sensor['latitude'], meta['longitude'])[0], (ref_sensor['elevation']-meta['elevation'])]
+    channel_metadata[tr.stats.station] = list(meta.values())
+    matrix[i] = tr.data[(tr.times(reftime=t0) >= 0)][0:9600]
     # remove_response(output = "VEL")
 
-mdict = {'time': t0}
+mdict = {}
 mdict['data'] = matrix
+mdict['r_m'] = distances
+mdict['meta'] = channel_metadata
 savemat("data.mat", mdict)
