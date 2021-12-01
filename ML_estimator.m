@@ -14,7 +14,7 @@ for i = 0:P-1
     X_w(i+1,:,:) = fft(x(:,i*L+1:(i+1)*L), L, 2);
 end
 X_w_pr = fftshift(X_w, 3);
-f = 4 * (-L/2:L/2-1)/L;
+f = 40 * (-L/2:L/2-1)/L;
 
 if(verbose)
     for p = (2:6)
