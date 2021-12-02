@@ -17,14 +17,17 @@ def random_date(start, end):
 
 client = Client("GFZ")
 
-start_time = datetime(year = 2012, month = 1, day = 1) #.isoformat()
+random_time = False #change to True to get a random time, picks a time between start_time and end_time
+#write stations in the following format [networkID, Station Names]
+stations = [["IS", "MMA*"], ["IS", "MMB*"], ["IS", "MMC*"]] 
+
+start_time = datetime(year = 2012, month = 1, day = 1) 
 end_time = datetime(year = 2019, month = 12, day = 30)
 
-t0 = UTCDateTime("2019-01-19T00:00:00.000")
-#t0 = UTCDateTime(random_date(start_time, end_time).isoformat())
-
-
-stations = [["IS", "MMA*"], ["IS", "MMB*"], ["IS", "MMC*"]] #[networkID, Station Names]
+if(random_time):
+    t0 = UTCDateTime(random_date(start_time, end_time).isoformat())
+else:
+    t0 = UTCDateTime("2019-01-19T00:00:00.000")
 
 mins_4 = lambda x: x + 4 * 60
 day_1 = lambda x: x + 24 * 60 * 60
