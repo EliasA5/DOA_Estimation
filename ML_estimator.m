@@ -3,6 +3,8 @@ clear all
 clc
 
 verbose = false;
+%oldpath = addpath('./LIBRA', '-end');
+%https://wis.kuleuven.be/stat/robust/LIBRAfiles/LIBRA-home-orig
 %system('conda activate obspy & python getData.py'); %uncomment to run the python data getter
 data = load("data.mat");
 x = data.data;
@@ -30,6 +32,15 @@ a = model(data.r_m, 16, 1, f);
 mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
 R = mcdRv.cov;
 fu = toMaximize(a, R, X_w, M, P);
+theta_max = MaximizeTheta(fu, 1, 30, 0.001);
+v_max = MaximizeV(fu, theta_max, 1, 0.1);
+alpha_max = MaximizeAlpha(fu, theta_max, v_max, 0.001);
+
+[theta_max fu(theta_max, 1, 1)]
+
+[v_max fu(theta_max, 1, v_max)]
+
+[alpha_max fu(theta_max, alpha_max, v_max)]
 
 
 function [fun] = toMaximize(a, R, X_w, M, P)
@@ -43,6 +54,45 @@ function [fun] = toMaximize(a, R, X_w, M, P)
         fun = @(theta, alpha, v_0) fun(theta, alpha, v_0) + f(m, theta, alpha, v_0)/norm(m, theta, alpha, v_0);
     end
     fun = @(theta, alpha, v_0) real(fun(theta, alpha, v_0));
+end
+
+function [val] = MaximizeTheta(fun, alpha, v_0, acc)
+    t_vec = -pi:acc:pi;
+    val = -pi;
+    curr_max = 0;
+    for t = t_vec
+        tmp = fun(t, alpha, v_0);
+        if(tmp > curr_max)
+            curr_max = tmp;
+            val = t;
+        end
+    end
+end
+
+function [val] = MaximizeV(fun, theta, alpha, acc)
+    v_vec = 1:acc:100;
+    val = 1;
+    curr_max = 0;
+    for v = v_vec
+        tmp = fun(theta, alpha, v);
+        if(tmp > curr_max)
+            curr_max = tmp;
+            val = v;
+        end
+    end
+end
+
+function [val] = MaximizeAlpha(fun, theta, v_0, acc)
+    a_vec = -pi:acc:0;
+    val = -pi;
+    curr_max = 0;
+    for a = a_vec
+        tmp = fun(theta, a, v_0);
+        if(tmp > curr_max)
+            curr_max = tmp;
+            val = a;
+        end
+    end
 end
 
 
