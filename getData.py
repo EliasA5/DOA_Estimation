@@ -64,6 +64,8 @@ channel_metadata = {'format' : ["latitude", "longitude", "elevation", "local_dep
 distances = np.empty([len(stream), 3])
 ref_sensor = inv.get_channel_metadata(stream[0].get_id())
 
+L_A_list = []
+
 for i,tr in enumerate(stream):
     if(tr.stats.channel != 'BHZ'):
         tr.filter("highpass", freq=1.0)
@@ -71,6 +73,7 @@ for i,tr in enumerate(stream):
     distances[i,:] = [gps2dist_azimuth(ref_sensor['latitude'], ref_sensor['longitude'], meta['latitude'], ref_sensor['longitude'])[0], gps2dist_azimuth(ref_sensor['latitude'], ref_sensor['longitude'], ref_sensor['latitude'], meta['longitude'])[0], (ref_sensor['elevation']-meta['elevation'])]
     channel_metadata[tr.stats.station] = list(meta.values())
     matrix[i] = tr.data[(tr.times(reftime=t0) >= 0)][0:9600]
+    L_A_list.append([meta['latitude'],meta['longitude']])   # this list hold the latitude and longtitude for each sensor
     # remove_response(output = "VEL")
 
 mdict = {}
@@ -78,3 +81,6 @@ mdict['data'] = matrix
 mdict['r_m'] = distances
 mdict['meta'] = channel_metadata
 savemat("data.mat", mdict)
+
+# save the longtitude and altitude for each sensor to calculate the Weights Materix
+savemat("L_A.mat",{'weights':L_A_list})
