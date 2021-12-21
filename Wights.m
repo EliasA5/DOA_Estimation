@@ -19,9 +19,16 @@ c = 10^(-5);    % the threshold is 10^(-7)
 for i=1:length(X)
     W(i,:) = exp(-d*sqrt((X(i)-X).^2 + (Y(i)-Y).^2 + (Z(i)-Z).^2)/(2*sigma));
 end
-
+figure;
+subplot(1,2,1)
+imagesc(log10(abs(W)));
 W( W < c) = 0;  
-save('Weights.mat',"W");
 
-L = diag(W) - W;
+subplot(1,2,2)
+imagesc(log10(abs(W)));
+save('Weights.mat',"W");
+writematrix(W,'Weights.txt');
+
+D = diag(sum(W,2));   % Diagonal matrix that hold the sum of all the weights for each edge
+L = D - W;    % Non-normalized Laplacian matrix
 

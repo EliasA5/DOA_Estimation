@@ -29,20 +29,22 @@ end
 
 sum_X_w_p = @(X) squeeze(sum(X,1));
 a = model(data.r_m, 16, 1, f);
-mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
-R = mcdRv.cov;
-fu = toMaximize(a, R, X_w, M, P);
-theta_max = MaximizeTheta(fu, 1, 30, 0.001);
-v_max = MaximizeV(fu, theta_max, 1, 0.1);
-alpha_max = MaximizeAlpha(fu, theta_max, v_max, 0.001);
+%mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
+%R = mcdRv.cov;
+R_real = robustcov(x.');    % Covariance based on the assumption of correlation 
+R_white = eye(M);   % no need for variance because it cancels out
+theta_real = pi/4;
+%------------------------------------------------------
+fu_real = toMaximize(a, R_real, X_w, M, P);
+fu_white = toMaximize(a, R_white, X_w, M, P);
 
-[theta_max fu(theta_max, 1, 1)];
-
-[v_max fu(theta_max, 1, v_max)];
-
-[alpha_max fu(theta_max, alpha_max, v_max)];
+theta_max_real = MaximizeTheta(fu_real, 1, 30, 0.001);
+theta_max_white = MaximizeTheta(fu_white, 1, 30, 0.001);
 
 
+
+
+%------------------------------------------------------
 function [fun] = toMaximize(a, R, X_w, M, P)
     R_inv = inv(R);
     X_w_p = squeeze(sum(X_w,1));
