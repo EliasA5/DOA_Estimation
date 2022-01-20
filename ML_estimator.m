@@ -31,19 +31,7 @@ a = model(data.r_m, 16, 1, f);
 mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
 R = mcdRv.cov;
 fu = toMaximize(a, R, X_w, M, P);
-<<<<<<< HEAD
 tic;[theta_max, alpha_max, v0_max] = Maximize3BySearch(fu, 0.1, 0.1, 1);toc;
-=======
-theta_max = MaximizeTheta(fu, 1, 30, 0.001);
-v_max = MaximizeV(fu, theta_max, 1, 0.1);
-alpha_max = MaximizeAlpha(fu, theta_max, v_max, 0.001);
-
-[theta_max fu(theta_max, 1, 1)];
-
-[v_max fu(theta_max, 1, v_max)];
-
-[alpha_max fu(theta_max, alpha_max, v_max)];
->>>>>>> master
 
 
 function [fun] = toMaximize(a, R, X_w, M, P)
