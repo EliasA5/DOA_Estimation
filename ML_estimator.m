@@ -1,5 +1,4 @@
 close all
-clear all
 clc
 
 verbose = false;
@@ -32,15 +31,7 @@ a = model(data.r_m, 16, 1, f);
 mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
 R = mcdRv.cov;
 fu = toMaximize(a, R, X_w, M, P);
-theta_max = MaximizeTheta(fu, 1, 30, 0.001);
-v_max = MaximizeV(fu, theta_max, 1, 0.1);
-alpha_max = MaximizeAlpha(fu, theta_max, v_max, 0.001);
-
-[theta_max fu(theta_max, 1, 1)]
-
-[v_max fu(theta_max, 1, v_max)]
-
-[alpha_max fu(theta_max, alpha_max, v_max)]
+tic;[theta_max, alpha_max, v0_max] = Maximize3BySearch(fu, 0.1, 0.1, 1);toc;
 
 
 function [fun] = toMaximize(a, R, X_w, M, P)
@@ -56,43 +47,31 @@ function [fun] = toMaximize(a, R, X_w, M, P)
     fun = @(theta, alpha, v_0) real(fun(theta, alpha, v_0));
 end
 
-function [val] = MaximizeTheta(fun, alpha, v_0, acc)
-    t_vec = -pi:acc:pi;
-    val = -pi;
-    curr_max = 0;
-    for t = t_vec
-        tmp = fun(t, alpha, v_0);
-        if(tmp > curr_max)
-            curr_max = tmp;
-            val = t;
+function [res] = applyVectorToFunction(func, theta_vec, alpha_vec, v0_vec)
+    res = gpuArray(zeros(numel(theta_vec), numel(alpha_vec), numel(v0_vec)));
+    for i = 1:numel(theta_vec)
+        for j = 1:numel(alpha_vec)
+            for k = 1:numel(v0_vec)
+                res(i, j, k) = func(theta_vec(i), alpha_vec(j), v0_vec(k));
+            end
         end
     end
+    res = gather(res);
+
 end
 
-function [val] = MaximizeV(fun, theta, alpha, acc)
-    v_vec = 1:acc:100;
-    val = 1;
-    curr_max = 0;
-    for v = v_vec
-        tmp = fun(theta, alpha, v);
-        if(tmp > curr_max)
-            curr_max = tmp;
-            val = v;
-        end
-    end
-end
 
-function [val] = MaximizeAlpha(fun, theta, v_0, acc)
-    a_vec = -pi:acc:0;
-    val = -pi;
-    curr_max = 0;
-    for a = a_vec
-        tmp = fun(theta, a, v_0);
-        if(tmp > curr_max)
-            curr_max = tmp;
-            val = a;
-        end
-    end
+function [theta_max, alpha_max, v0_max] = Maximize3BySearch(func, theta_acc, alpha_acc, v0_acc)
+    theta_vec = -pi:theta_acc:pi;
+    alpha_vec = -pi:alpha_acc:0;
+    v0_vec = 1:v0_acc:100;
+    [Theta_vec, Alpha_vec, V0_vec] = meshgrid(theta_vec, alpha_vec, v0_vec);
+    res = arrayfun(func, Theta_vec, Alpha_vec, V0_vec);
+    [~, I] = max(res, [], 'all');
+    [i, j, k] = ind2sub(size(res), I);
+    theta_max = theta_vec(i);
+    alpha_max = alpha_vec(j);
+    v0_max = v0_vec(k);
 end
 
 
