@@ -74,4 +74,43 @@ function [theta_max, alpha_max, v0_max] = Maximize3BySearch(func, theta_acc, alp
     v0_max = v0_vec(k);
 end
 
+function [val] = MaximizeTheta(fun, alpha, v_0, acc)
+    t_vec = -pi:acc:pi;
+    val = -pi;
+    curr_max = 0;
+    for t = t_vec
+        tmp = fun(t, alpha, v_0);
+        if(tmp > curr_max)
+            curr_max = tmp;
+            val = t;
+        end
+    end
+end
+
+function [val] = MaximizeV(fun, theta, alpha, acc)
+    v_vec = 1:acc:100;
+    val = 1;
+    curr_max = 0;
+    for v = v_vec
+        tmp = fun(theta, alpha, v);
+        if(tmp > curr_max)
+            curr_max = tmp;
+            val = v;
+        end
+    end
+end
+
+function [val] = MaximizeAlpha(fun, theta, v_0, acc)
+    a_vec = -pi:acc:0;
+    val = -pi;
+    curr_max = 0;
+    for a = a_vec
+        tmp = fun(theta, a, v_0);
+        if(tmp > curr_max)
+            curr_max = tmp;
+            val = a;
+        end
+    end
+end
+
 
