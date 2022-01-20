@@ -1,4 +1,5 @@
 close all
+clear all
 clc
 
 verbose = false;
@@ -28,24 +29,22 @@ end
 
 sum_X_w_p = @(X) squeeze(sum(X,1));
 a = model(data.r_m, 16, 1, f);
-mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
-R = mcdRv.cov;
-fu = toMaximize(a, R, X_w, M, P);
-<<<<<<< HEAD
-tic;[theta_max, alpha_max, v0_max] = Maximize3BySearch(fu, 0.1, 0.1, 1);toc;
-=======
-theta_max = MaximizeTheta(fu, 1, 30, 0.001);
-v_max = MaximizeV(fu, theta_max, 1, 0.1);
-alpha_max = MaximizeAlpha(fu, theta_max, v_max, 0.001);
+%mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
+%R = mcdRv.cov;
+R_real = robustcov(x.');    % Covariance based on the assumption of correlation 
+R_white = eye(M);   % no need for variance because it cancels out
+theta_real = pi/4;
+%------------------------------------------------------
+fu_real = toMaximize(a, R_real, X_w, M, P);
+fu_white = toMaximize(a, R_white, X_w, M, P);
 
-[theta_max fu(theta_max, 1, 1)];
-
-[v_max fu(theta_max, 1, v_max)];
-
-[alpha_max fu(theta_max, alpha_max, v_max)];
->>>>>>> master
+theta_max_real = MaximizeTheta(fu_real, 1, 30, 0.001);
+theta_max_white = MaximizeTheta(fu_white, 1, 30, 0.001);
 
 
+
+
+%------------------------------------------------------
 function [fun] = toMaximize(a, R, X_w, M, P)
     R_inv = inv(R);
     X_w_p = squeeze(sum(X_w,1));
@@ -57,33 +56,6 @@ function [fun] = toMaximize(a, R, X_w, M, P)
         fun = @(theta, alpha, v_0) fun(theta, alpha, v_0) + f(m, theta, alpha, v_0)/norm(m, theta, alpha, v_0);
     end
     fun = @(theta, alpha, v_0) real(fun(theta, alpha, v_0));
-end
-
-function [res] = applyVectorToFunction(func, theta_vec, alpha_vec, v0_vec)
-    res = gpuArray(zeros(numel(theta_vec), numel(alpha_vec), numel(v0_vec)));
-    for i = 1:numel(theta_vec)
-        for j = 1:numel(alpha_vec)
-            for k = 1:numel(v0_vec)
-                res(i, j, k) = func(theta_vec(i), alpha_vec(j), v0_vec(k));
-            end
-        end
-    end
-    res = gather(res);
-
-end
-
-
-function [theta_max, alpha_max, v0_max] = Maximize3BySearch(func, theta_acc, alpha_acc, v0_acc)
-    theta_vec = -pi:theta_acc:pi;
-    alpha_vec = -pi:alpha_acc:0;
-    v0_vec = 1:v0_acc:100;
-    [Theta_vec, Alpha_vec, V0_vec] = meshgrid(theta_vec, alpha_vec, v0_vec);
-    res = arrayfun(func, Theta_vec, Alpha_vec, V0_vec);
-    [~, I] = max(res, [], 'all');
-    [i, j, k] = ind2sub(size(res), I);
-    theta_max = theta_vec(i);
-    alpha_max = alpha_vec(j);
-    v0_max = v0_vec(k);
 end
 
 function [val] = MaximizeTheta(fun, alpha, v_0, acc)
