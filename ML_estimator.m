@@ -31,7 +31,8 @@ a = model(data.r_m, 16, 1, f);
 mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
 R = mcdRv.cov;
 fu = toMaximize(a, R, X_w, M, P);
-tic;[theta_max, alpha_max, v0_max] = Maximize3BySearch(fu, 0.1, 0.1, 1);toc;
+%tic;[theta_max, alpha_max, v0_max] = Maximize3BySearch(fu, 0.1, 0.1, 1);toc;
+thet = MaximizeTheta(fu, 1, 1, 0.1);
 
 
 function [fun] = toMaximize(a, R, X_w, M, P)
@@ -76,41 +77,30 @@ end
 
 function [val] = MaximizeTheta(fun, alpha, v_0, acc)
     t_vec = -pi:acc:pi;
-    val = -pi;
-    curr_max = 0;
-    for t = t_vec
-        tmp = fun(t, alpha, v_0);
-        if(tmp > curr_max)
-            curr_max = tmp;
-            val = t;
-        end
-    end
+    Alphas = ones(size(t_vec)) * alpha;
+    V_0 = ones(size(t_vec)) * v_0;
+    max_vals = arrayfun(fun, t_vec, Alphas, V_0);
+    [~, I] = max(max_vals);
+    val = t_vec(I);
 end
 
 function [val] = MaximizeV(fun, theta, alpha, acc)
     v_vec = 1:acc:100;
-    val = 1;
-    curr_max = 0;
-    for v = v_vec
-        tmp = fun(theta, alpha, v);
-        if(tmp > curr_max)
-            curr_max = tmp;
-            val = v;
-        end
-    end
+    Thetas = ones(size(t_vec)) * theta;
+    Alphas = ones(size(t_vec)) * alpha;
+    max_vals = arrayfun(fun, Thetas, Alphas, v_vec);
+    [~, I] = max(max_vals);
+    val = t_vec(I);
 end
 
 function [val] = MaximizeAlpha(fun, theta, v_0, acc)
     a_vec = -pi:acc:0;
-    val = -pi;
-    curr_max = 0;
-    for a = a_vec
-        tmp = fun(theta, a, v_0);
-        if(tmp > curr_max)
-            curr_max = tmp;
-            val = a;
-        end
-    end
+    Thetas = ones(size(t_vec)) * theta;
+    V_0 = ones(size(t_vec)) * v_0;
+    max_vals = arrayfun(fun, Thetas, a_vec, V_0);
+    [~, I] = max(max_vals);
+    val = t_vec(I);
+
 end
 
 
