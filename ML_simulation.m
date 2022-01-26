@@ -17,8 +17,9 @@ rm = data.r_m;   % r_m is loaded form the data matrix we extrcted from the getDa
 M = 10;   % for these simlutaions we decided to use one segement
 P = 1;
 f = 3;      % the omega_m s constant at this point for all the frquencies
-acc = 0.1;   % this is the accuracy for the MLE sweep in method 1
+acc = 0.001;   % this is the accuracy for the MLE sweep in method 1
 iters = 1000;    % the number of iterations for the Fisher's scoring (second method)
+a_model = model(rm, K_1, K_3, f*ones(M,1));
 %%
 Tests = 2;
 
@@ -33,17 +34,17 @@ for i = 1:Tests
     theta = rand*2*pi - pi; % theta is in [-pi,pi)
     theta_og(i) = theta;
 
-    [X_colored,~,Rv_colored,~] = synData(rm, theta, alpha, v_0, sigma_source, sigma_noise, M, 'colored', f, K_1, K_3);
-    [X_white,s,Rv_white,a] = synData(rm, theta, alpha, v_0, sigma_source, sigma_noise, M, 'white', f, K_1, K_3);
+    [X_colored,~,Rv_colored,~] = synData(rm, theta, alpha, v_0, sigma_source, sigma_noise, M, 'colored', f, K_1, K_3, P);
+    [X_white,s,Rv_white,a] = synData(rm, theta, alpha, v_0, sigma_source, sigma_noise, M, 'white', f, K_1, K_3, P);
 
 
     % MLE for colored noise
-    fun_colored = toMaximize(a, Rv_colored, X_colored, M, P);
+    fun_colored = toMaximize(a_model, Rv_colored, X_colored, M, P);
     theta_colored = MaximizeTheta(fun_colored, alpha, v_0, acc);
     RMSPE_MLE_colored(i) = sqrt(mean((theta-theta_colored).^2));
 
     % MLE for white noise
-    fun_white = toMaximize(a, Rv_white, X_white, M, P);
+    fun_white = toMaximize(a_model, Rv_white, X_white, M, P);
     theta_white = MaximizeTheta(fun_white, alpha, v_0, acc);
     RMSPE_MLE_white(i) = sqrt(mean((theta-theta_white).^2));
 
@@ -71,11 +72,10 @@ legend('fisher null' , 'fisher colored' , 'MLE null' , 'MLE colored');
 
 
 function [fun] = toMaximize(a, R, X_w, M, P)
-    R_inv = inv(R);
-    %X_w_p = squeeze(sum(X_w,1));
-    X_w_p = X_w;
+    R_inv = pinv(R);
+    X_w_p = squeeze(sum(X_w,1));
     norm = @(m, theta, alpha, v_0) a(m, theta, alpha, v_0)' * R_inv * a(m, theta, alpha, v_0);
-    upper = @(m, theta, alpha, v_0) a(m, theta, alpha, v_0)' * R_inv * X_w_p;
+    upper = @(m, theta, alpha, v_0) a(m, theta, alpha, v_0)' * R_inv * X_w_p(:,m);
     f = @(m, theta, alpha, v_0) 1/P * upper(m, theta, alpha, v_0)' * upper(m, theta, alpha, v_0);
     fun = @(theta, alpha, v_0) 0;
     for m = 1:M
@@ -86,15 +86,11 @@ end
 
 function [val] = MaximizeTheta(fun, alpha, v_0, acc)
     t_vec = -pi:acc:pi;
-    val = -pi;
-    curr_max = 0;
-    for t = t_vec
-        tmp = fun(t, alpha, v_0);
-        if(tmp > curr_max)
-            curr_max = tmp;
-            val = t;
-        end
-    end
+    Alphas = ones(size(t_vec)) * alpha;
+    V_0 = ones(size(t_vec)) * v_0;
+    max_vals = arrayfun(fun, t_vec, Alphas, V_0);
+    [~, I] = max(max_vals);
+    val = t_vec(I);
 end
 
 
