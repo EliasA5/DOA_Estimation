@@ -1,55 +1,81 @@
 close all
 clear all
 clc
-
-verbose = false;
-%oldpath = addpath('./LIBRA', '-end');
-%https://wis.kuleuven.be/stat/robust/LIBRAfiles/LIBRA-home-orig
-%system('conda activate obspy & python getData.py'); %uncomment to run the python data getter
+%--------------------------------------------------------------------------
+% This scripts performs the comparison between the MLE and Fisher's scoring
+% for white noise and colored noise
+% All signal's are in the frequency domain
+%%
+K_1 = 15;
+K_3 = 1;
+alpha = rand * pi/2;
+v_0 = 1;  % P waves velocities can be from 6 Km/sec to 11 Km/sec
+sigma_source = 1;
+sigma_noise = 1;  % for white and colored noise
 data = load("data.mat");
-x = data.data;
-[M,N] = size(x); %M is number of sensors
-L = 128;
-P = ceil(N/L);
-X_w = zeros(P, M, L); %X_w(p,:,m) to address the pth segment and mth frequency
-for i = 0:P-1
-    X_w(i+1,:,:) = fft(x(:,i*L+1:(i+1)*L), L, 2);
+rm = data.r_m;   % r_m is loaded form the data matrix we extrcted from the getData python script
+M = 10;   % for these simlutaions we decided to use one segement
+P = 1;
+f = 3;      % the omega_m s constant at this point for all the frquencies
+acc = 0.1;   % this is the accuracy for the MLE sweep in method 1
+iters = 1000;    % the number of iterations for the Fisher's scoring (second method)
+%%
+Tests = 2;
+
+RMSPE_MLE_colored = zeros(Tests,1);
+RMSPE_MLE_white = zeros(Tests,1);
+RMSPE_fisher_colored = zeros(Tests,1);
+RMSPE_fisher_white = zeros(Tests,1);
+theta_og = zeros(Tests,1);
+
+for i = 1:Tests
+
+    theta = rand*2*pi - pi; % theta is in [-pi,pi)
+    theta_og(i) = theta;
+
+    [X_colored,~,Rv_colored,~] = synData(rm, theta, alpha, v_0, sigma_source, sigma_noise, M, 'colored', f, K_1, K_3);
+    [X_white,s,Rv_white,a] = synData(rm, theta, alpha, v_0, sigma_source, sigma_noise, M, 'white', f, K_1, K_3);
+
+
+    % MLE for colored noise
+    fun_colored = toMaximize(a, Rv_colored, X_colored, M, P);
+    theta_colored = MaximizeTheta(fun_colored, alpha, v_0, acc);
+    RMSPE_MLE_colored(i) = sqrt(mean((theta-theta_colored).^2));
+
+    % MLE for white noise
+    fun_white = toMaximize(a, Rv_white, X_white, M, P);
+    theta_white = MaximizeTheta(fun_white, alpha, v_0, acc);
+    RMSPE_MLE_white(i) = sqrt(mean((theta-theta_white).^2));
+
+    % Fisher's scoring for colored noise
+    theta_colored = Fisher_scoring(theta,s,Rv_colored,f,v_0,alpha,K_3,K_1,X_colored,iters);
+    RMSPE_fisher_colored = sqrt(mean((theta-theta_colored).^2));
+
+    % Fisher's scoring for white noise
+    theta_white = Fisher_scoring(theta,s,Rv_white,f,v_0,alpha,K_3,K_1,X_white,iters);
+    RMSPE_fisher_white = sqrt(mean((theta-theta_white).^2));
+
 end
-X_w_pr = fftshift(X_w, 3);
-f = 40 * (-L/2:L/2-1)/L;
 
-if(verbose)
-    for p = (2:6)
-        figure;
-        for i = 1:M
-            subplot(3,6,i);plot(f, abs(squeeze(X_w_pr(p,i,:))));title(['fft of channel ' num2str(i) newline 'at ' num2str(p) 'th segment']);
-        end
-    end
-end
-
-sum_X_w_p = @(X) squeeze(sum(X,1));
-a = model(data.r_m, 16, 1, f);
-%mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
-%R = mcdRv.cov;
-R_real = robustcov(x.');    % Covariance based on the assumption of correlation 
-R_white = eye(M);   % no need for variance because it cancels out
-theta_real = pi/4;
-%------------------------------------------------------
-fu_real = toMaximize(a, R_real, X_w, M, P);
-fu_white = toMaximize(a, R_white, X_w, M, P);
-
-theta_max_real = MaximizeTheta(fu_real, 1, 30, 0.001);
-theta_max_white = MaximizeTheta(fu_white, 1, 30, 0.001);
+figure;
+hold on;
+plot(RMSPE_fisher_white)
+plot(RMSPE_fisher_colored)
+plot(RMSPE_MLE_white)
+plot(RMSPE_MLE_colored)
+hold off;
+legend('fisher null' , 'fisher colored' , 'MLE null' , 'MLE colored');
 
 
 
 
-%------------------------------------------------------
+
 function [fun] = toMaximize(a, R, X_w, M, P)
     R_inv = inv(R);
-    X_w_p = squeeze(sum(X_w,1));
+    %X_w_p = squeeze(sum(X_w,1));
+    X_w_p = X_w;
     norm = @(m, theta, alpha, v_0) a(m, theta, alpha, v_0)' * R_inv * a(m, theta, alpha, v_0);
-    upper = @(m, theta, alpha, v_0) a(m, theta, alpha, v_0)' * R_inv * X_w_p(:,m);
+    upper = @(m, theta, alpha, v_0) a(m, theta, alpha, v_0)' * R_inv * X_w_p;
     f = @(m, theta, alpha, v_0) 1/P * upper(m, theta, alpha, v_0)' * upper(m, theta, alpha, v_0);
     fun = @(theta, alpha, v_0) 0;
     for m = 1:M
@@ -67,32 +93,6 @@ function [val] = MaximizeTheta(fun, alpha, v_0, acc)
         if(tmp > curr_max)
             curr_max = tmp;
             val = t;
-        end
-    end
-end
-
-function [val] = MaximizeV(fun, theta, alpha, acc)
-    v_vec = 1:acc:100;
-    val = 1;
-    curr_max = 0;
-    for v = v_vec
-        tmp = fun(theta, alpha, v);
-        if(tmp > curr_max)
-            curr_max = tmp;
-            val = v;
-        end
-    end
-end
-
-function [val] = MaximizeAlpha(fun, theta, v_0, acc)
-    a_vec = -pi:acc:0;
-    val = -pi;
-    curr_max = 0;
-    for a = a_vec
-        tmp = fun(theta, a, v_0);
-        if(tmp > curr_max)
-            curr_max = tmp;
-            val = a;
         end
     end
 end
