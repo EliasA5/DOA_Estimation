@@ -18,7 +18,7 @@ M = 10;   % for these simlutaions we decided to use one segement
 P = 1;
 f = 3;      % the omega_m s constant at this point for all the frquencies
 acc = 0.001;   % this is the accuracy for the MLE sweep in method 1
-iters = 1000;    % the number of iterations for the Fisher's scoring (second method)
+iters = 1500;    % the number of iterations for the Fisher's scoring (second method)
 a_model = model(rm, K_1, K_3, f*ones(M,1));
 %%
 Tests = 2;
@@ -49,22 +49,23 @@ for i = 1:Tests
     RMSPE_MLE_white(i) = sqrt(mean((theta-theta_white).^2));
 
     % Fisher's scoring for colored noise
-    theta_colored = Fisher_scoring(theta,s,Rv_colored,f,v_0,alpha,K_3,K_1,X_colored,iters);
-    RMSPE_fisher_colored = sqrt(mean((theta-theta_colored).^2));
+    theta_colored = Fisher_scoring(theta,s,Rv_colored,f,v_0,alpha,K_3,K_1,X_colored,iters,rm);
+    RMSPE_fisher_colored(i) = sqrt(mean((theta-theta_colored).^2));
 
     % Fisher's scoring for white noise
-    theta_white = Fisher_scoring(theta,s,Rv_white,f,v_0,alpha,K_3,K_1,X_white,iters);
-    RMSPE_fisher_white = sqrt(mean((theta-theta_white).^2));
+    theta_white = Fisher_scoring(theta,s,Rv_white,f,v_0,alpha,K_3,K_1,X_white,iters,rm);
+    RMSPE_fisher_white(i) = sqrt(mean((theta-theta_white).^2));
 
 end
 
 figure;
 hold on;
-plot(RMSPE_fisher_white)
-plot(RMSPE_fisher_colored)
-plot(RMSPE_MLE_white)
-plot(RMSPE_MLE_colored)
+stem(RMSPE_fisher_white)
+stem(RMSPE_fisher_colored)
+stem(RMSPE_MLE_white)
+stem(RMSPE_MLE_colored)
 hold off;
+grid on;
 legend('fisher null' , 'fisher colored' , 'MLE null' , 'MLE colored');
 
 

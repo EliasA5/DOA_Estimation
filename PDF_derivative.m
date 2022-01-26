@@ -2,9 +2,9 @@ function [df_theta] = PDF_derivative(K_3,K_1,v_0,phi,omega,s,r_k,Rv,x,theta,da,M
 % This function calculates the derivative of the log of the PDF
 
 a = zeros(3*K_3 + K_1 , 1);
-R_inv = inv(Rv);
+R_inv = pinv(Rv);
 df_theta = 0;
-
+X_w_p = squeeze(sum(x,1));
 sin_phi = sin(phi);
 cos_phi = cos(phi);
 sin_theta = sin(theta);
@@ -28,7 +28,7 @@ end
 for i = 1:M
     mue = a * s(i);
     dmu = da * s(i);
-    x_i = x(i,:).';
+    x_i = X_w_p(:,i);
     df_theta = df_theta + (x_i-mue)' * R_inv * dmu + (x_i-mue).' * R_inv.' * conj(dmu);
 
 end
