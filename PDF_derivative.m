@@ -29,7 +29,7 @@ for i = 1:M
     mue = a * s(i);
     dmu = da * s(i);
     x_i = X_w_p(:,i);
-    df_theta = df_theta + (x_i-mue)' * R_inv * dmu + (x_i-mue).' * R_inv.' * conj(dmu);
+    df_theta = df_theta + (x_i-mue)' * R_inv * dmu + (dmu)'* R_inv * (x_i-mue);
 
 end
 
