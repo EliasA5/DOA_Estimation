@@ -21,4 +21,4 @@ echo "SLURM_JOBID”=$SLURM_JOBID
 echo "SLURM_JOB_NODELIST"=$SLURM_JOB_NODELIST
 ### Start you code below ####
 module load matlab ### load matlab module
-matlab -nosplash -nodisplay -nodesktop -batch "ML_simulation_real" 
+matlab -nosplash -nodisplay -nodesktop -sd "/home/eliasass/Seismic-Extractor_Estimators" -batch "ML_simulation_real" 
