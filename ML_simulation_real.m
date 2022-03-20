@@ -39,6 +39,6 @@ for file = files'
     if(limit && j == 10), break; end
 end
 %close(f)
-save('results', 'estimated_theta,real_thetas,estimated_error,real_errors');
+save('results', 'estimated_theta','real_thetas','estimated_error','real_errors');
 delete(gcp);
 clear all;
