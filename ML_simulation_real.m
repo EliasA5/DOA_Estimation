@@ -1,7 +1,7 @@
 close all
 clc
 
-
+oldpath = addpath('./LIBRA', '-end');
 files = dir('./matFiles/*.mat');
 estimated_theta = [];
 real_thetas = [];
@@ -40,3 +40,5 @@ for file = files'
 end
 %close(f)
 save('results', 'estimated_theta,real_thetas,estimated_error,real_errors');
+delete(gcp);
+clear all;
