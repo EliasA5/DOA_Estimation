@@ -21,6 +21,7 @@ for file = files'
     err_size = size(err);
     if(err_size(2) ~= 1)
         disp(append('something is wrong with: ', file.name))
+        continue
     end
     %for each arrival
     parfor i=1:data_size(1)
@@ -32,13 +33,14 @@ for file = files'
         [theta_est, alpha_est, v0_est] = ML_estimator(signal, L, r_m, accuracy, real_theta, 1/real_slowness, alpha_data, 'theta');
         estimated_theta = [estimated_theta, theta_est];
         real_thetas = [real_thetas, real_theta];
-        estimated_error = [estimated_error, mod(sqrt(abs(real_theta^2-theta_est^2)), 2*pi)];
+        estimated_error = [estimated_error, wrapTo2Pi(sqrt(abs(real_theta^2-theta_est^2)))];
         real_errors = [real_errors, real_error];
     end
     j = j+1;
-    if(limit && j == 10), break; end
+    if(limit && j == 3), break; end
 end
 %close(f)
-save('results', 'estimated_theta','real_thetas','estimated_error','real_errors');
+res = dir('./results_*.mat');
+save(append('results_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error','real_errors');
 delete(gcp);
 clear all;
