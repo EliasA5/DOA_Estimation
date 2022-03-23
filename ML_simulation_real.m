@@ -33,7 +33,7 @@ for file = files'
         [theta_est, alpha_est, v0_est] = ML_estimator(signal, L, r_m, accuracy, real_theta, 1/real_slowness, alpha_data, 'theta');
         estimated_theta = [estimated_theta, theta_est];
         real_thetas = [real_thetas, real_theta];
-        estimated_error = [estimated_error, wrapTo2Pi(sqrt(abs(real_theta^2-theta_est^2)))];
+        estimated_error = [estimated_error, MSPE(real_theta, theta_est)];
         real_errors = [real_errors, real_error];
     end
     j = j+1;
