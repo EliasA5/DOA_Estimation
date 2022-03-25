@@ -4,6 +4,7 @@ clc
 %--------------------------------------------------------------------------
 K_1 = 15;
 K_3 = 1;
+K = 3 * K_3 + K_1;
 alpha = pi/4;
 v_0 = 9600;  % P waves velocities can be from 6 Km/sec to 11 Km/sec
 SNR = 10;
@@ -13,29 +14,32 @@ data = load("data.mat");
 r_k = data.r_m;   % r_m is loaded form the data matrix we extrcted from the getData python script
 M = 100;   % for these simlutaions we decided to use one segement
 P = 1;
-f = 3;      % the omega_m is constant at this point for all the frquencies
+f = 3;
+w = f * ones(M,1);      % the omega_m is constant at this point for all the frquencies
 %--------------------------------------------------------------------------
 Tests = 10;
 
 theta_og = -pi +2*pi/Tests : 2*pi/Tests : pi;
 theta_0 = pi/4; % starting estimate at 45 deg
 
-iters = 500;
+iters = 400;
 
 theta_white_f = zeros(Tests,1);
 theta_colored_f = zeros(Tests,1);
 
 step_size_white = 1;
 step_size_colored = 1;
-gamma = 0.9;
+gamma = 0.95;
+
+[a,da] = model(r_k, K_1, K_3, w);
 
 for t = 1 : Tests
     
     [X_colored,s_colored,Rv_colored,~] = synData(r_k, theta_og(t), alpha, v_0, sigma_source, sigma_noise, M, 'colored', f, K_1, K_3, P);
     [X_white,s_white,Rv_white,~] = synData(r_k, theta_og(t), alpha, v_0, sigma_source, sigma_noise, M, 'white', f, K_1, K_3, P);
 
-    theta_white = Fisher_scoring(theta_0,Rv_white,f,v_0,alpha,K_3,K_1,X_white,iters,r_k,step_size_white,gamma,M,s_white);
-    theta_colored = Fisher_scoring(theta_0,Rv_colored,f,v_0,alpha,K_3,K_1,X_colored,iters,r_k,step_size_colored,gamma,M,s_colored);
+    [theta_white,~] = Fisher_scoring('syn',theta_0,Rv_white,v_0,alpha,K,X_white,iters,step_size_white,gamma,M,P,a,da);
+    [theta_colored,~] = Fisher_scoring('syn',theta_0,Rv_colored,v_0,alpha,K,X_colored,iters,step_size_colored,gamma,M,P,a,da);
 
     theta_white_f(t) = (theta_white(end));
     theta_colored_f(t) = (theta_colored(end));
