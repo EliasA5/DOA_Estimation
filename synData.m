@@ -19,7 +19,7 @@ end
 
 signal_all = mvnrnd(zeros(2,1), 0.5*eye(2)*sigma_squared, num_samples);
 signal = (signal_all(:,1) + 1i*signal_all(:,2)).';   % signal = source
-a_func = model(rm, K_1, K_3, [f]);
+[a_func, ~] = model(rm, K_1, K_3, [f]);
 a = a_func(1, theta, alpha, v0).';
 a_s = repmat(a, num_samples, 1).' .* repmat(signal, K, 1);
 for i=1:P

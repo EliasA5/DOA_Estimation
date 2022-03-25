@@ -11,7 +11,7 @@ for i = 0:P-1
 end
 f = 40 * (-L/2:L/2-1)/L;
 
-a = model(r_m, K_1, K_3, f);
+[a, ~] = model(r_m, K_1, K_3, f);
 mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
 R = mcdRv.cov;
 fu = toMaximize(a, R, X_w, M, P);
