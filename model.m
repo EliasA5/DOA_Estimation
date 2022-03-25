@@ -19,7 +19,4 @@ else
     a = @(m, theta, alpha, v_0) [e_z(theta,alpha) .* exp(-1i*w(m) * tau(r_m, theta, alpha, v_0))];
     da = @(m, theta, alpha, v_0) -1i*w(m)*dtau(r_m, theta, alpha, v_0) .* a(m, theta, alpha, v_0);
 end
-%#TODO change reference to [a] to [a,da]
-
-
 end
