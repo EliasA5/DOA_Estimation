@@ -20,14 +20,14 @@ Tests = 10;
 theta_og = -pi +2*pi/Tests : 2*pi/Tests : pi;
 theta_0 = pi/4; % starting estimate at 45 deg
 
-iters = 400;
+iters = 500;
 
 theta_white_f = zeros(Tests,1);
 theta_colored_f = zeros(Tests,1);
 
 step_size_white = 1;
 step_size_colored = 1;
-gamma = 0.85;
+gamma = 0.9;
 
 for t = 1 : Tests
     
@@ -40,12 +40,15 @@ for t = 1 : Tests
     theta_white_f(t) = (theta_white(end));
     theta_colored_f(t) = (theta_colored(end));
 
+    MSP_white(t) = MSPE(theta_white_f(t), theta_og(t));
+    MSP_colored(t) = MSPE(theta_colored_f(t), theta_og(t));
+
 %     figure;
 %     hold on
 %     plot(theta_colored)
 %     plot(theta_white)
 %     hold off
-%     legend('colored' , white)
+%     legend('colored' , 'white')
 
 end
 
@@ -55,9 +58,8 @@ bias_colored = wrapToPi((theta_colored_f - theta_og.'));
 % MSP_white = wrapToPi((theta_white_f - theta_og.') .^ 2);
 % MSP_colored = wrapToPi((theta_colored_f - theta_og.') .^ 2);
 
-MSP_white = (cos(theta_og.') - cos(theta_white_f) .^ 2) + (sin(theta_og.') - sin(theta_white_f) .^ 2);
-MSP_colored = (cos(theta_og.') - cos(theta_colored_f) .^ 2) + (sin(theta_og.') - sin(theta_colored_f) .^ 2);
-
+% MSP_white = MSPE(theta_white_f, theta_og.');
+% MSP_colored = MSPE(theta_colored_f, theta_og.');
 
 figure;
 hold on;

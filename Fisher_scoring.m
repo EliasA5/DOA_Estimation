@@ -60,9 +60,7 @@ for i = 1 : iters - 1
         dmue = da * s(j);
         x_i = X_w(:,j);
 
-        df_theta = df_theta + (x_i - mue)' * ...
-        Rv_inv * dmue + (dmue' * Rv_inv * (x_i - mue)).';
-
+        df_theta = df_theta + (x_i - mue)' * Rv_inv * dmue + (dmue' * Rv_inv * (x_i - mue)).';
         FIM = FIM + real(dmue' * Rv_inv * dmue);
 
     end
