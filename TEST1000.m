@@ -25,150 +25,18 @@ iters = 400;
 theta_white_f = zeros(Tests,1);
 theta_colored_f = zeros(Tests,1);
 
+step_size_white = 1;
+step_size_colored = 1;
+gamma = 0.85;
 
 for t = 1 : Tests
-
-    step_size_white = 1;
-    step_size_colored = 1;
-    gamma = 0.85;
-    
-    theta_colored = zeros(1,iters);
-    theta_white = zeros(1,iters);
-    
-    theta_white(1) = theta_0;
-    theta_colored(1) = theta_0;
     
     [X_colored,s_colored,Rv_colored,~] = synData(r_k, theta_og(t), alpha, v_0, sigma_source, sigma_noise, M, 'colored', f, K_1, K_3, P);
     [X_white,s_white,Rv_white,~] = synData(r_k, theta_og(t), alpha, v_0, sigma_source, sigma_noise, M, 'white', f, K_1, K_3, P);
-    
-    a_colored = zeros(3*K_3 + K_1 , 1);
-    a_white = zeros(3*K_3 + K_1 , 1);
-    
-    da_colored = zeros(3*K_3 + K_1 , 1);
-    da_white = zeros(3*K_3 + K_1 , 1);
-    
-    Rv_white_inv = pinv(Rv_white);
-    Rv_colored_inv = pinv(Rv_colored);
-    
-    X_w_white = squeeze(sum(X_white,1));
-    X_w_colored = squeeze(sum(X_colored,1));
-    
-    sin_alpha = sin(alpha);
-    cos_alpha = cos(alpha);
 
-    pdf_white = zeros(1,iters);
-    pdf_colored = zeros(1,iters);
+    theta_white = Fisher_scoring(theta_0,Rv_white,f,v_0,alpha,K_3,K_1,X_white,iters,r_k,step_size_white,gamma,M,s_white);
+    theta_colored = Fisher_scoring(theta_0,Rv_colored,f,v_0,alpha,K_3,K_1,X_colored,iters,r_k,step_size_colored,gamma,M,s_colored);
 
-    for i = 1 : iters - 1
-    
-        FIM_white = 0;
-        FIM_colored = 0;
-    
-        df_theta_white = 0;
-        df_theta_colored = 0;
-    
-        % calculate the a and a derivative for the colored and white
-        sin_theta_white = sin(theta_white(i));
-        sin_theta_colored = sin(theta_colored(i));
-    
-        cos_theta_white = cos(theta_white(i));
-        cos_theta_colored = cos(theta_colored(i));
-    
-        e_u_white = [sin_theta_white * sin_alpha ; cos_theta_white * sin_alpha ; cos_alpha];
-        e_u_colored = [sin_theta_colored * sin_alpha ; cos_theta_colored * sin_alpha ; cos_alpha];
-    
-        for j = 1 : 3 : 3 * K_3
-    
-            r_k_i = r_k(j,:);
-    
-            tau_3D_white = r_k_i * e_u_white/v_0;
-            tau_3D_colored = r_k_i * e_u_colored/v_0;
-    
-            tau_3D_der_white = (1/v_0) * (r_k_i(1) * cos_theta_white * sin_alpha - r_k_i(2) * sin_theta_white * sin_alpha);
-            tau_3D_der_colored = (1/v_0) * (r_k_i(1) * cos_theta_colored * sin_alpha - r_k_i(2) * sin_theta_colored * sin_alpha);
-    
-            e_i_white = exp(-1i * f * tau_3D_white);
-            e_i_colored = exp(-1i * f * tau_3D_colored);
-    
-            da_white(j) = sin_alpha * e_i_white * (cos_theta_white - 1i * f * sin_theta_white * tau_3D_der_white);
-            da_white(j+1) = sin_alpha * e_i_white * (-sin_theta_white - 1i * f * cos_theta_white * tau_3D_der_white);
-            da_white(j+2) = cos_alpha * e_i_white * (-1i * f * tau_3D_der_white);
-        
-            da_colored(j) = sin_alpha * e_i_colored * (cos_theta_colored - 1i * f * sin_theta_colored * tau_3D_der_colored);
-            da_colored(j+1) = sin_alpha * e_i_colored * (-sin_theta_colored - 1i * f * cos_theta_colored * tau_3D_der_colored);
-            da_colored(j+2) = cos_alpha * e_i_colored * (-1i * f * tau_3D_der_colored);
-    
-            a_white(j) = sin_theta_white * sin_alpha * e_i_white;
-            a_white(j+1) = cos_theta_white * sin_alpha * e_i_white;
-            a_white(j+2) = cos_alpha * e_i_white;
-        
-            a_colored(j) = sin_theta_colored * sin_alpha * e_i_colored;
-            a_colored(j+1) = cos_theta_colored * sin_alpha * e_i_colored;
-            a_colored(j+2) = cos_alpha * e_i_colored;
-    
-        end
-    
-        for j = 3 * K_3 + 1 : 3 * K_3 + K_1
-    
-            r_k_i = r_k(j,:);
-    
-            tau_1D_white = r_k_i * e_u_white/v_0;
-            tau_1D_colored = r_k_i * e_u_colored/v_0;
-    
-            tau_1D_der_white = (1/v_0) * (r_k_i(1) * cos_theta_white * sin_alpha - r_k_i(2) * sin_theta_white * sin_alpha);
-            tau_1D_der_colored = (1/v_0) * (r_k_i(1) * cos_theta_colored * sin_alpha - r_k_i(2) * sin_theta_colored * sin_alpha);
-    
-            e_i_white = exp(-1i * f * tau_1D_white);
-            e_i_colored = exp(-1i * f * tau_1D_colored);
-    
-            da_white(j) = cos_alpha * e_i_white * (-1i * f * tau_1D_der_white);
-            da_colored(j) = cos_alpha * e_i_colored * (-1i * f * tau_1D_der_colored);
-    
-            a_white(j) = cos_alpha * e_i_white;
-            a_colored(j) = cos_alpha * e_i_colored;
-    
-        end
-    
-        for j = 1 : M
-    
-            mue_white = a_white * s_white(j);
-            mue_colored = a_colored * s_colored(j);
-    
-            dmue_white = da_white * s_white(j);
-            dmue_colored = da_colored * s_colored(j);
-    
-            x_i_white = X_w_white(:,j);
-            x_i_colored = X_w_colored(:,j);
-    
-            df_theta_white = df_theta_white + (x_i_white - mue_white)' * ...
-            Rv_white_inv * dmue_white + (dmue_white' * Rv_white_inv * (x_i_white - mue_white)).';
-    
-            df_theta_colored = df_theta_colored + (x_i_colored - mue_colored)' * ...
-            Rv_colored_inv * dmue_colored + (dmue_colored' * Rv_colored_inv * (x_i_colored - mue_colored)).';
-    
-            FIM_white = FIM_white + real(dmue_white' * Rv_white_inv * dmue_white);
-            FIM_colored = FIM_colored + real(dmue_colored' * Rv_colored_inv * dmue_colored);
-    
-        end
-    
-        FIM_white = FIM_white * 2;
-        FIM_colored = FIM_colored * 2;
-
-        pdf_white(i+1) = log_likelihood(X_w_white,mue_white,Rv_white_inv,M);
-        pdf_colored(i+1) = log_likelihood(X_w_colored,mue_colored,Rv_colored_inv,M);
-    
-        theta_white(i+1) = wrapToPi(real(theta_white(i) + step_size_white * FIM_white ^ (-1) * df_theta_white));
-        theta_colored(i+1) = wrapToPi(real(theta_colored(i) + step_size_colored * FIM_colored ^ (-1) * df_theta_colored));
-
-        if (pdf_white(i+1) < pdf_white(i))
-            step_size_white = step_size_white * gamma;
-        end
-
-        if (pdf_colored(i+1) < pdf_colored(i))
-            step_size_colored = step_size_colored * gamma;
-        end
-    end
-    
     theta_white_f(t) = (theta_white(end));
     theta_colored_f(t) = (theta_colored(end));
 

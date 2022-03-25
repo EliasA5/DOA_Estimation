@@ -1,4 +1,4 @@
-function [theta_estimate] = Fisher_scoring(theta_0,Rv,f,v_0,alpha,K_3,K_1,X,iters,r_k,step_size,gamma)
+function [theta_estimate] = Fisher_scoring(theta_0,Rv,f,v_0,alpha,K_3,K_1,X,iters,r_k,step_size,gamma,M,s)
 % This function estimates the DOA (theta) using Fisher's scoring
 
 theta_estimate = zeros(1,iters);
