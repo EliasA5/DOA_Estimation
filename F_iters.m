@@ -8,7 +8,7 @@ K_1 = 15;
 K_3 = 1;
 alpha = pi/4;
 v_0 = 1;  % P waves velocities can be from 6 Km/sec to 11 Km/sec
-SNR = 10;
+SNR = 1;
 sigma_source = 10;
 sigma_noise = 1;  % for white and colored noise
 data = load("data.mat");
@@ -47,125 +47,126 @@ for i = 1:Tests
     [X_white,s,Rv_white,a] = synData(rm, theta, alpha, v_0, sigma_source, sigma_noise, M, 'white', f, K_1, K_3, P);
 
     % Fisher's scoring for colored noise
-    theta_estimate = 0;
+    theta_0 = 0;
+    theta_estimate = theta_0;
     
     for j = 1:4000
-        da =  A_derivative(v_0,alpha,rm,K_3,K_1,theta,f);
-        df_theta = PDF_derivative(K_3,K_1,v_0,alpha,f,s,rm,Rv_colored,X_colored,theta,da,M);
+        da =  A_derivative(v_0,alpha,rm,K_3,K_1,theta_estimate,f);
+        df_theta = PDF_derivative(K_3,K_1,v_0,alpha,f,s,rm,Rv_colored,X_colored,theta_estimate,da,M);
         F = FIM(s,M,Rv_colored,da); %scalar for only theta
         theta_estimate = theta_estimate + df_theta/F;
 
-        if (j==100)
-            theta_colored = real(theta_estimate);
+%         if (j==100)
+%             theta_colored = real(theta_estimate);
 %             if abs(theta_colored) > pi
 %                   theta_colored = mod(theta_colored,pi);
 %             end
-            RMSPE_colored_100(i) =  sqrt(mean((theta-theta_colored).^2));
-        end
-
-        if (j==1000)
-            theta_colored = real(theta_estimate);
+%             RMSPE_colored_100(i) =  sqrt(mean((theta-theta_colored).^2));
+%         end
+% 
+%         if (j==1000)
+%             theta_colored = real(theta_estimate);
 %             if abs(theta_colored) > pi
 %                   theta_colored = mod(theta_colored,pi);
 %             end
-            RMSPE_colored_1000(i) =  sqrt(mean((theta-theta_colored).^2));
-        end
-
-        if (j==2000)
-            theta_colored = real(theta_estimate);
+%             RMSPE_colored_1000(i) =  sqrt(mean((theta-theta_colored).^2));
+%         end
+% 
+%         if (j==2000)
+%             theta_colored = real(theta_estimate);
 %             if abs(theta_colored) > pi
 %                   theta_colored = mod(theta_colored,pi);
 %             end
-            RMSPE_colored_2000(i) =  sqrt(mean((theta-theta_colored).^2));
-        end
-
-        if (j==3000)
-            theta_colored = real(theta_estimate);
+%             RMSPE_colored_2000(i) =  sqrt(mean((theta-theta_colored).^2));
+%         end
+% 
+%         if (j==3000)
+%             theta_colored = real(theta_estimate);
 %             if abs(theta_colored) > pi
 %                   theta_colored = mod(theta_colored,pi);
 %             end
-            RMSPE_colored_3000(i) =  sqrt(mean((theta-theta_colored).^2));
-        end
+%             RMSPE_colored_3000(i) =  sqrt(mean((theta-theta_colored).^2));
+%         end
     end
     theta_colored = real(theta_estimate);
-%     if abs(theta_colored) > pi
-%           theta_colored = mod(theta_colored,pi);
-%     end
+    if abs(theta_colored) > pi
+          theta_colored = mod(theta_colored,pi);
+    end
     RMSPE_colored_4000(i) =  sqrt(mean((theta-theta_colored).^2));
     
 
     % Fisher's scoring for white noise
-    theta_estimate = 0;
+    theta_estimate = theta_0;
     
     for j = 1:4000
-        da =  A_derivative(v_0,alpha,rm,K_3,K_1,theta,f);
-        df_theta = PDF_derivative(K_3,K_1,v_0,alpha,f,s,rm,Rv_white,X_white,theta,da,M);
+        da =  A_derivative(v_0,alpha,rm,K_3,K_1,theta_estimate,f);
+        df_theta = PDF_derivative(K_3,K_1,v_0,alpha,f,s,rm,Rv_white,X_white,theta_estimate,da,M);
         F = FIM(s,M,Rv_white,da); %scalar for only theta
         theta_estimate = theta_estimate + df_theta/F;
 
-        if (j==100)
-            theta_white = real(theta_estimate);
+%         if (j==100)
+%             theta_white = real(theta_estimate);
 %             if abs(theta_white) > pi
 %                   theta_white = mod(theta_white,pi);
 %             end
-            RMSPE_white_100(i) =  sqrt(mean((theta-theta_white).^2));
-        end
-
-        if (j==1000)
-            theta_white = real(theta_estimate);
+%             RMSPE_white_100(i) =  sqrt(mean((theta-theta_white).^2));
+%         end
+% 
+%         if (j==1000)
+%             theta_white = real(theta_estimate);
 %             if abs(theta_white) > pi
 %                   theta_white = mod(theta_white,pi);
 %             end
-            RMSPE_white_1000(i) =  sqrt(mean((theta-theta_white).^2));
-        end
-
-        if (j==2000)
-            theta_white = real(theta_estimate);
+%             RMSPE_white_1000(i) =  sqrt(mean((theta-theta_white).^2));
+%         end
+% 
+%         if (j==2000)
+%             theta_white = real(theta_estimate);
 %             if abs(theta_white) > pi
 %                   theta_white = mod(theta_white,pi);
 %             end
-            RMSPE_white_2000(i) =  sqrt(mean((theta-theta_white).^2));
-        end
-
-        if (j==3000)
-            theta_white = real(theta_estimate);
+%             RMSPE_white_2000(i) =  sqrt(mean((theta-theta_white).^2));
+%         end
+% 
+%         if (j==3000)
+%             theta_white = real(theta_estimate);
 %             if abs(theta_white) > pi
 %                   theta_white = mod(theta_white,pi);
 %             end
-            RMSPE_white_3000(i) =  sqrt(mean((theta-theta_white).^2));
-        end
+%             RMSPE_white_3000(i) =  sqrt(mean((theta-theta_white).^2));
+%         end
 
     end
     theta_white = real(theta_estimate);
-%     if abs(theta_white) > pi
-%           theta_white = mod(theta_white,pi);
-%     end
+    if abs(theta_white) > pi
+          theta_white = mod(theta_white,pi);
+    end
     RMSPE_white_4000(i) =  sqrt(mean((theta-theta_white).^2));
 
 end
 
 figure;
 hold on;
-stem(theta_og,RMSPE_colored_100)
-stem(theta_og,RMSPE_colored_1000)
-stem(theta_og,RMSPE_colored_2000)
-stem(theta_og,RMSPE_colored_3000)
+% stem(theta_og,RMSPE_colored_100)
+% stem(theta_og,RMSPE_colored_1000)
+% stem(theta_og,RMSPE_colored_2000)
+% stem(theta_og,RMSPE_colored_3000)
 stem(theta_og,RMSPE_colored_4000)
 hold off;
 grid on;
-legend('100' , '1000' , '2000' , '3000' , '4000');
+%legend('100' , '1000' , '2000' , '3000' , '4000');
 title('Colored')
 
 figure;
 hold on;
-stem(theta_og,RMSPE_white_100)
-stem(theta_og,RMSPE_white_1000)
-stem(theta_og,RMSPE_white_2000)
-stem(theta_og,RMSPE_white_3000)
+% stem(theta_og,RMSPE_white_100)
+% stem(theta_og,RMSPE_white_1000)
+% stem(theta_og,RMSPE_white_2000)
+% stem(theta_og,RMSPE_white_3000)
 stem(theta_og,RMSPE_white_4000)
 hold off;
 grid on;
-legend('100' , '1000' , '2000' , '3000' , '4000');
+% legend('100' , '1000' , '2000' , '3000' , '4000');
 title('white')
 
 
