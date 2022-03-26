@@ -22,7 +22,7 @@ Tests = 10;
 theta_og = -pi +2*pi/Tests : 2*pi/Tests : pi;
 theta_0 = pi/4; % starting estimate at 45 deg
 
-iters = 400;
+iters = 10000;
 
 theta_white_f = zeros(Tests,1);
 theta_colored_f = zeros(Tests,1);
@@ -30,6 +30,7 @@ theta_colored_f = zeros(Tests,1);
 step_size_white = 1;
 step_size_colored = 1;
 gamma = 0.95;
+acc = 0.00001;
 
 [a,da] = model(r_k, K_1, K_3, w);
 
@@ -38,14 +39,14 @@ for t = 1 : Tests
     [X_colored,s_colored,Rv_colored,~] = synData(r_k, theta_og(t), alpha, v_0, sigma_source, sigma_noise, M, 'colored', f, K_1, K_3, P);
     [X_white,s_white,Rv_white,~] = synData(r_k, theta_og(t), alpha, v_0, sigma_source, sigma_noise, M, 'white', f, K_1, K_3, P);
 
-    [theta_white,~] = Fisher_scoring('syn',theta_0,Rv_white,v_0,alpha,K,X_white,iters,step_size_white,gamma,M,P,a,da);
-    [theta_colored,~] = Fisher_scoring('syn',theta_0,Rv_colored,v_0,alpha,K,X_colored,iters,step_size_colored,gamma,M,P,a,da);
+    [theta_white,~] = Fisher_scoring('syn',theta_0,Rv_white,v_0,alpha,K,X_white,iters,step_size_white,gamma,M,P,a,da,acc);
+    [theta_colored,~] = Fisher_scoring('syn',theta_0,Rv_colored,v_0,alpha,K,X_colored,iters,step_size_colored,gamma,M,P,a,da,acc);
 
     theta_white_f(t) = (theta_white(end));
     theta_colored_f(t) = (theta_colored(end));
-
-    MSP_white(t) = MSPE(theta_white_f(t), theta_og(t));
-    MSP_colored(t) = MSPE(theta_colored_f(t), theta_og(t));
+% 
+%     MSP_white(t) = MSPE(theta_white_f(t), theta_og(t));
+%     MSP_colored(t) = MSPE(theta_colored_f(t), theta_og(t));
 
 %     figure;
 %     hold on
@@ -84,14 +85,14 @@ xlabel('Test')
 ylabel('Bias')
 hold off
 
-figure;
-hold on;
-stem(MSP_white)
-stem(MSP_colored)
-legend('White Estimate','Colored Estimate')
-xlabel('Test')
-ylabel('MSE')
-hold off
+% figure;
+% hold on;
+% stem(MSP_white)
+% stem(MSP_colored)
+% legend('White Estimate','Colored Estimate')
+% xlabel('Test')
+% ylabel('MSE')
+% hold off
 
 %%
 angles = linspace(0, 2*pi, 500);
