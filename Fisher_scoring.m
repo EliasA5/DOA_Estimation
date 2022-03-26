@@ -1,4 +1,4 @@
-function [theta_estimate,theta_final] = Fisher_scoring(type_sim,theta_0,Rv,v_0,alpha,K,X,iters,step_size,gamma,M,P,a_f,da_f)
+function [theta_estimate,theta_final] = Fisher_scoring(type_sim,theta_0,Rv,v_0,alpha,K,X,iters,step_size,gamma,M,P,a_f,da_f,acc)
 % This function estimates the DOA (theta) using Fisher's scoring
 
 if (strcmp(type_sim , 'realData'))
@@ -56,7 +56,10 @@ for i = 1 : iters - 1
         step_size = step_size * gamma;
     end
 
+    if (abs(theta_estimate(i+1) - theta_estimate(i)) < acc)
+        theta_estimate(end) = theta_estimate(i+1);
+        break;
+    end
 end
-
 theta_final = theta_estimate(end);
 end
