@@ -62,11 +62,15 @@ CRB_colored_cyc1 = [];
 CRB_white_cyc2 = [];
 CRB_colored_cyc2 = [];
 
-theta_og = -pi +2*pi/Tests : 2*pi/Tests : pi;
+% theta_og = -pi +2*pi/Tests : 2*pi/Tests : pi;
+epsilon = 0.1;
 
+SNR = logspace(-2, 2, Tests);
+theta_og = pi / 5 + epsilon;
 parfor i = 1 : Tests
 
-    theta = theta_og(i);         % theta is in [-pi,pi]
+    theta = pi / 5 + epsilon;         % theta is in [-pi,pi]
+    sigma_source = SNR(i) * sigma_noise
 
     [X_colored,~,Rv_colored,~] = synData(rm, theta, alpha, v_0, sigma_source, sigma_noise, M, 'colored', w, K_1, K_3, P);
     [X_white,~,Rv_white,~] = synData(rm, theta, alpha, v_0, sigma_source, sigma_noise, M, 'white', w, K_1, K_3, P);
@@ -137,16 +141,82 @@ end
 % grid on;
 % legend('fisher null' , 'fisher colored' , 'MLE null' , 'MLE colored' , 'CRB white' , 'CRB colored');
 
+%% figure to show the convergance of the methods
 figure;
 hold on; grid on;
-plot(theta_og,'*','LineWidth', 2)
-plot(ThetaEst_MLE_white,'o'); plot(ThetaEst_MLE_colored,'o');
-plot(ThetaEst_fisher_white,'x'); plot(ThetaEst_fisher_colored,'x');
+plot(SNR,theta_og,'x','LineWidth', 2)
+plot(SNR,ThetaEst_MLE_white,'o'); plot(SNR,ThetaEst_MLE_colored,'o');
+stem(SNR,ThetaEst_fisher_white,'*'); stem(SNR,ThetaEst_fisher_colored,'*');
 legend('Original', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
-xlabel('Test'); ylabel('\theta'); title('Comparison of the Estimations')
+xlabel('SNR'); ylabel('\theta'); title('Comparison of the Estimations')
+hold off
+set(gca,'Xscale','log')
+%% figure to compare the MSPE to all kinds of CRB 
+figure;
+subplot(3,1,1)
+hold on; grid on;
+plot(CRB_white_reg,'x','LineWidth', 2);plot(CRB_colored_reg,'x','LineWidth', 2);
+plot(RMSPE_MLE_white,'o'); plot(RMSPE_MLE_colored,'o');
+stem(RMSPE_fisher_white,'*'); stem(RMSPE_fisher_colored,'*');
+legend('CRB W', 'CRB C', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+xlabel('SNR'); ylabel('Regular MSPE'); title('regular CRB vs. MSPE of the Estimations')
+hold off
+set(gca,'Xscale','log')
+set(gca,'Yscale','log')
+
+
+
+subplot(3,1,2)
+hold on; grid on;
+plot(CRB_white_cyc1,'x','LineWidth', 2);plot(CRB_colored_cyc2,'x','LineWidth', 2);
+plot(RMSPE_MLE_white,'o'); plot(RMSPE_MLE_colored,'o');
+stem(RMSPE_fisher_white,'*'); stem(RMSPE_fisher_colored,'*');
+legend('CRB W', 'CRB C', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+xlabel('SNR'); ylabel('Regular MSPE'); title('cyclic 1 CRB vs. MSPE of the Estimations')
+hold off
+set(gca,'Xscale','log')
+set(gca,'Yscale','log')
+
+
+subplot(3,1,3)
+hold on; grid on;
+plot(CRB_white_cyc2,'x','LineWidth', 2);plot(CRB_colored_cyc2,'x','LineWidth', 2);
+plot(RMSPE_MLE_white,'o'); plot(RMSPE_MLE_colored,'o');
+stem(RMSPE_fisher_white,'*'); stem(RMSPE_fisher_colored,'*');
+legend('CRB W', 'CRB C', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+xlabel('SNR'); ylabel('Regular MSPE'); title('cyclic 2 CRB vs. MSPE of the Estimations')
+hold off
+set(gca,'Xscale','log')
+set(gca,'Yscale','log')
+
+%% figure to compare the cyclic MSPE to all kinds of CRB 
+figure;
+subplot(3,1,1)
+hold on; grid on;
+plot(CRB_white_reg,'x','LineWidth', 2);plot(CRB_colored_reg,'x','LineWidth', 2);
+plot(CyclicErr_MLE_white,'o'); plot(CyclicErr_MLE_colored,'o');
+stem(CyclicErr_fisher_white,'*'); stem(CyclicErr_fisher_colored,'*');
+legend('CRB W', 'CRB C', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+xlabel('Test'); ylabel('Regular MSPE'); title('regular CRB vs. CMSPE of the Estimations')
 hold off
 
+subplot(3,1,2)
+hold on; grid on;
+plot(CRB_white_cyc1,'x','LineWidth', 2);plot(CRB_colored_cyc2,'x','LineWidth', 2);
+plot(RMSPE_MLE_white,'o'); plot(RMSPE_MLE_colored,'o');
+stem(RMSPE_fisher_white,'*'); stem(RMSPE_fisher_colored,'*');
+legend('CRB W', 'CRB C', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+xlabel('Test'); ylabel('Regular MSPE'); title('cyclic 1 CRB vs. CMSPE of the Estimations')
+hold off
 
+subplot(3,1,3)
+hold on; grid on;
+plot(CRB_white_cyc2,'x','LineWidth', 2);plot(CRB_colored_cyc2,'x','LineWidth', 2);
+plot(RMSPE_MLE_white,'o'); plot(RMSPE_MLE_colored,'o');
+stem(RMSPE_fisher_white,'*'); stem(RMSPE_fisher_colored,'*');
+legend('CRB W', 'CRB C', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+xlabel('Test'); ylabel('Regular MSPE'); title('cyclic 2 CRB vs. CMSPE of the Estimations')
+hold off
 
 %% Circle
 angles = linspace(0, 2*pi, 500);
