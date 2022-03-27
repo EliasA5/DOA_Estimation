@@ -7,7 +7,7 @@ clc
 %--------------------------------------------------------------------------
 %% Initialization
 
-M = 30;                          
+M = 40;                          
 P = 25;
 K_1 = 15;
 K_3 = 1;
@@ -25,8 +25,8 @@ sigma_noise = 1;                % for white and colored noise
 data = load("data.mat");
 rm = data.r_m;                  % r_m is loaded form the data matrix we extrcted from the getData python script
 
-acc = 0.01;                    % this is the accuracy for the MLE sweep in method 1
-iters = 400;                    % the number of iterations for the Fisher's scoring (second method)
+acc = 0.001;                    % this is the accuracy for the MLE sweep in method 1
+iters = 1e4;                    % the number of iterations for the Fisher's scoring (second method)
 step_size_white = 1;
 step_size_colored = 1;
 gamma = 0.95;
@@ -36,19 +36,31 @@ theta_0 = pi/4-1e-1;                 % starting estimate at 45 deg
 
 %% Estimation 
 
-Tests = 60;
+Tests = 18;
 
-RMSPE_MLE_colored_b = [];
-CyclicErr_MLE_colored_b = [];
+RMSPE_MLE_colored_colored_b = [];
+CyclicErr_MLE_colored_colored_b = [];
 
-RMSPE_MLE_white_b = [];
-CyclicErr_MLE_white_b = [];
+RMSPE_MLE_colored_white_b = [];
+CyclicErr_MLE_colored_white_b = [];
 
-RMSPE_fisher_colored_b = [];
-CyclicErr_fisher_colored_b = [];
+RMSPE_MLE_white_white_b = [];
+CyclicErr_MLE_white_white_b = [];
 
-RMSPE_fisher_white_b = [];
-CyclicErr_fisher_white_b = [];
+RMSPE_MLE_white_colored_b = [];
+CyclicErr_MLE_white_colored_b = [];
+
+RMSPE_fisher_colored_colored_b = [];
+CyclicErr_fisher_colored_colored_b = [];
+
+RMSPE_fisher_colored_white_b = [];
+CyclicErr_fisher_colored_white_b = [];
+
+RMSPE_fisher_white_white_b = [];
+CyclicErr_fisher_white_white_b = [];
+
+RMSPE_fisher_white_colored_b = [];
+CyclicErr_fisher_white_colored_b = [];
 
 CRB_white_reg_b = [];
 CRB_colored_reg_b = [];
@@ -59,13 +71,12 @@ CRB_colored_cyc2_b = [];
 
 %f = waitbar(0,'Please wait...');
 J = 1;
-for j=1:1
+for j=1:3
 %waitbar(j/(J+1), f, append('iter: ', string(j), ' of ', string(J)));
 RMSPE_MLE_colored_colored = [];
 CyclicErr_MLE_colored_colored = [];
 ThetaEst_MLE_colored_colored = [];
 
-%#TODO implement me
 RMSPE_MLE_colored_white = [];
 CyclicErr_MLE_colored_white = [];
 ThetaEst_MLE_colored_white = [];
@@ -74,7 +85,6 @@ RMSPE_MLE_white_white = [];
 CyclicErr_MLE_white_white = [];
 ThetaEst_MLE_white_white = [];
 
-%$TODO implement me
 RMSPE_MLE_white_colored = [];
 CyclicErr_MLE_white_colored = [];
 ThetaEst_MLE_white_colored = [];
@@ -83,7 +93,6 @@ RMSPE_fisher_colored_colored = [];
 CyclicErr_fisher_colored_colored = [];
 ThetaEst_fisher_colored_colored = [];
 
-%#TODO implement me
 RMSPE_fisher_colored_white = [];
 CyclicErr_fisher_colored_white = [];
 ThetaEst_fisher_colored_white = [];
@@ -92,7 +101,6 @@ RMSPE_fisher_white_white = [];
 CyclicErr_fisher_white_white = [];
 ThetaEst_fisher_white_white = [];
 
-%#TODO implement me
 RMSPE_fisher_white_colored = [];
 CyclicErr_fisher_white_colored = [];
 ThetaEst_fisher_white_colored = [];
@@ -107,7 +115,7 @@ CRB_colored_cyc2 = [];
 % theta_og = -pi +2*pi/Tests : 2*pi/Tests : pi;
 epsilon = 0.1;
 
-SNR = logspace(-2, 4, Tests);
+SNR = logspace(-2, 6, Tests);
 theta_og = pi / 5 + epsilon;
 
 parfor i = 1 : Tests
@@ -126,12 +134,12 @@ parfor i = 1 : Tests
     CyclicErr_MLE_colored_colored = [CyclicErr_MLE_colored_colored, MSPE(theta, theta_colored_MLE, 'cyclic')];
     ThetaEst_MLE_colored_colored = [ThetaEst_MLE_colored_colored, theta_colored_MLE];
 
-    % MLE for colored noise-white %#FIXME
-    fun_colored = toMaximizeMLE(a_model, Rv_colored, X_colored, M, P);
-    tic;theta_colored_MLE = real(MaximizeTheta(fun_colored, alpha, v_0, acc));toc;
-    RMSPE_MLE_colored_colored = [RMSPE_MLE_colored_colored, MSPE(theta, theta_colored_MLE, 'MSPE')];
-    CyclicErr_MLE_colored_colored = [CyclicErr_MLE_colored_colored, MSPE(theta, theta_colored_MLE, 'cyclic')];
-    ThetaEst_MLE_colored_colored = [ThetaEst_MLE_colored_colored, theta_colored_MLE];
+
+    fun_colored = toMaximizeMLE(a_model, Rv_white, X_colored, M, P);
+    theta_colored_MLE = real(MaximizeTheta(fun_colored, alpha, v_0, acc));
+    RMSPE_MLE_colored_white = [RMSPE_MLE_colored_white, MSPE(theta, theta_colored_MLE, 'MSPE')];
+    CyclicErr_MLE_colored_white = [CyclicErr_MLE_colored_white, MSPE(theta, theta_colored_MLE, 'cyclic')];
+    ThetaEst_MLE_colored_white = [ThetaEst_MLE_colored_white, theta_colored_MLE];
 
     % MLE for white noise-white
     fun_white = toMaximizeMLE(a_model, Rv_white, X_white, M, P);
@@ -140,24 +148,22 @@ parfor i = 1 : Tests
     CyclicErr_MLE_white_white = [CyclicErr_MLE_white_white, MSPE(theta, theta_white_MLE, 'cyclic')];
     ThetaEst_MLE_white_white = [ThetaEst_MLE_white_white, theta_white_MLE];
 
-    % MLE for white noise-colored %#FIXME
-    fun_white = toMaximizeMLE(a_model, Rv_white, X_white, M, P);
+    fun_white = toMaximizeMLE(a_model, Rv_colored, X_white, M, P);
     theta_white_MLE = real(MaximizeTheta(fun_white, alpha, v_0, acc));
-    RMSPE_MLE_white_white = [RMSPE_MLE_white_white, MSPE(theta, theta_white_MLE, 'MSPE')];
-    CyclicErr_MLE_white_white = [CyclicErr_MLE_white_white, MSPE(theta, theta_white_MLE, 'cyclic')];
-    ThetaEst_MLE_white_white = [ThetaEst_MLE_white_white, theta_white_MLE];
+    RMSPE_MLE_white_colored = [RMSPE_MLE_white_colored, MSPE(theta, theta_white_MLE, 'MSPE')];
+    CyclicErr_MLE_white_colored = [CyclicErr_MLE_white_colored, MSPE(theta, theta_white_MLE, 'cyclic')];
+    ThetaEst_MLE_white_colored = [ThetaEst_MLE_white_colored, theta_white_MLE];
 
     % Fisher's scoring for colored noise-colored
-    [~,theta_colored_fisher] = Fisher_scoring('syn',theta_0,Rv_colored,v_0,alpha,K,X_colored,iters,step_size_colored,gamma,M,P,a_model,da_model,1e-5);
+    tic;[~,theta_colored_fisher] = Fisher_scoring('syn',theta_0,Rv_colored,v_0,alpha,K,X_colored,iters,step_size_colored,gamma,M,P,a_model,da_model,1e-5);toc;
     RMSPE_fisher_colored_colored = [RMSPE_fisher_colored_colored, MSPE(theta, theta_colored_fisher, 'MSPE')];
     CyclicErr_fisher_colored_colored = [CyclicErr_fisher_colored_colored, MSPE(theta, theta_colored_fisher, 'cyclic')];
     ThetaEst_fisher_colored_colored = [ThetaEst_fisher_colored_colored, theta_colored_fisher];
 
-        % Fisher's scoring for colored noise-white %#FIXME
-    [~,theta_colored_fisher] = Fisher_scoring('syn',theta_0,Rv_colored,v_0,alpha,K,X_colored,iters,step_size_colored,gamma,M,P,a_model,da_model,1e-5);
-    RMSPE_fisher_colored_colored = [RMSPE_fisher_colored_colored, MSPE(theta, theta_colored_fisher, 'MSPE')];
-    CyclicErr_fisher_colored_colored = [CyclicErr_fisher_colored_colored, MSPE(theta, theta_colored_fisher, 'cyclic')];
-    ThetaEst_fisher_colored_colored = [ThetaEst_fisher_colored_colored, theta_colored_fisher];
+    [~,theta_colored_fisher] = Fisher_scoring('syn',theta_0,Rv_white,v_0,alpha,K,X_colored,iters,step_size_colored,gamma,M,P,a_model,da_model,1e-5);
+    RMSPE_fisher_colored_white = [RMSPE_fisher_colored_white, MSPE(theta, theta_colored_fisher, 'MSPE')];
+    CyclicErr_fisher_colored_white = [CyclicErr_fisher_colored_white, MSPE(theta, theta_colored_fisher, 'cyclic')];
+    ThetaEst_fisher_colored_white = [ThetaEst_fisher_colored_white, theta_colored_fisher];
     
     % Fisher's scoring for white noise-white
     [~,theta_white_fisher] = Fisher_scoring('syn',theta_0,Rv_white,v_0,alpha,K,X_white,iters,step_size_white,gamma,M,P,a_model,da_model,1e-5);
@@ -165,11 +171,10 @@ parfor i = 1 : Tests
     CyclicErr_fisher_white_white = [CyclicErr_fisher_white_white, MSPE(theta, theta_white_fisher, 'cyclic')];
     ThetaEst_fisher_white_white = [ThetaEst_fisher_white_white, theta_white_fisher];
 
-        % Fisher's scoring for white noise-colored %#FIXME
-    [~,theta_white_fisher] = Fisher_scoring('syn',theta_0,Rv_white,v_0,alpha,K,X_white,iters,step_size_white,gamma,M,P,a_model,da_model,1e-5);
-    RMSPE_fisher_white_white = [RMSPE_fisher_white_white, MSPE(theta, theta_white_fisher, 'MSPE')];
-    CyclicErr_fisher_white_white = [CyclicErr_fisher_white_white, MSPE(theta, theta_white_fisher, 'cyclic')];
-    ThetaEst_fisher_white_white = [ThetaEst_fisher_white_white, theta_white_fisher];
+    [~,theta_white_fisher] = Fisher_scoring('syn',theta_0,Rv_colored,v_0,alpha,K,X_white,iters,step_size_white,gamma,M,P,a_model,da_model,1e-5);
+    RMSPE_fisher_white_colored = [RMSPE_fisher_white_colored, MSPE(theta, theta_white_fisher, 'MSPE')];
+    CyclicErr_fisher_white_colored = [CyclicErr_fisher_white_colored, MSPE(theta, theta_white_fisher, 'cyclic')];
+    ThetaEst_fisher_white_colored = [ThetaEst_fisher_white_colored, theta_white_fisher];
 
     % Calculating the CRB (calculating all kinds)
 
@@ -183,17 +188,29 @@ parfor i = 1 : Tests
     CRB_colored_cyc2 = [CRB_colored_cyc2, CRB('cyclic 2',v_0,alpha,theta,Rv_colored,M,X_colored,a_model,da_model,P)];
 end
 
-RMSPE_MLE_colored_b = [RMSPE_MLE_colored_b ; RMSPE_MLE_colored_colored];
-CyclicErr_MLE_colored_b = [CyclicErr_MLE_colored_b; CyclicErr_MLE_colored_colored];
+RMSPE_MLE_colored_colored_b = [RMSPE_MLE_colored_colored_b ; RMSPE_MLE_colored_colored];
+CyclicErr_MLE_colored_colored_b = [CyclicErr_MLE_colored_colored_b; CyclicErr_MLE_colored_colored];
 
-RMSPE_MLE_white_b = [RMSPE_MLE_white_b; RMSPE_MLE_white_white];
-CyclicErr_MLE_white_b = [CyclicErr_MLE_white_b; CyclicErr_MLE_white_white];
+RMSPE_MLE_colored_white_b = [RMSPE_MLE_colored_white_b; RMSPE_MLE_colored_white];
+CyclicErr_MLE_colored_white_b = [CyclicErr_MLE_colored_white_b; CyclicErr_MLE_colored_white];
 
-RMSPE_fisher_colored_b = [RMSPE_fisher_colored_b; RMSPE_fisher_colored_colored];
-CyclicErr_fisher_colored_b = [CyclicErr_fisher_colored_b; CyclicErr_fisher_colored_colored];
+RMSPE_MLE_white_white_b = [RMSPE_MLE_white_white_b; RMSPE_MLE_white_white];
+CyclicErr_MLE_white_white_b = [CyclicErr_MLE_white_white_b; CyclicErr_MLE_white_white];
 
-RMSPE_fisher_white_b = [RMSPE_fisher_white_b; RMSPE_fisher_white_white];
-CyclicErr_fisher_white_b = [CyclicErr_fisher_white_b; CyclicErr_fisher_white_white];
+RMSPE_MLE_white_colored_b = [RMSPE_MLE_white_colored_b; RMSPE_MLE_white_colored];
+CyclicErr_MLE_white_colored_b = [CyclicErr_MLE_white_colored_b; CyclicErr_MLE_white_colored];
+
+RMSPE_fisher_colored_colored_b = [RMSPE_fisher_colored_colored_b; RMSPE_fisher_colored_colored];
+CyclicErr_fisher_colored_colored_b = [CyclicErr_fisher_colored_colored_b; CyclicErr_fisher_colored_colored];
+
+RMSPE_fisher_colored_white_b = [RMSPE_fisher_colored_white_b; RMSPE_fisher_colored_white];
+CyclicErr_fisher_colored_white_b = [CyclicErr_fisher_colored_white_b; CyclicErr_fisher_colored_white];
+
+RMSPE_fisher_white_white_b = [RMSPE_fisher_white_white_b; RMSPE_fisher_white_white];
+CyclicErr_fisher_white_white_b = [CyclicErr_fisher_white_white_b; CyclicErr_fisher_white_white];
+
+RMSPE_fisher_white_colored_b = [RMSPE_fisher_white_colored_b; RMSPE_fisher_white_colored];
+CyclicErr_fisher_white_colored_b = [CyclicErr_fisher_white_colored_b; CyclicErr_fisher_white_colored];
 
 CRB_white_reg_b = [CRB_white_reg_b; CRB_white_reg];
 CRB_colored_reg_b = [CRB_colored_reg_b; CRB_colored_reg];
@@ -204,17 +221,29 @@ CRB_colored_cyc2_b = [CRB_colored_cyc2_b; CRB_colored_cyc2];
 
 end
 
-RMSPE_MLE_colored_colored = mean(RMSPE_MLE_colored_b, 1);
-CyclicErr_MLE_colored_colored = mean(CyclicErr_MLE_colored_b, 1);
+RMSPE_MLE_colored_colored = mean(RMSPE_MLE_colored_colored_b, 1);
+CyclicErr_MLE_colored_colored = mean(CyclicErr_MLE_colored_colored_b, 1);
 
-RMSPE_MLE_white_white = mean(RMSPE_MLE_white_b, 1);
-CyclicErr_MLE_white_white = mean(CyclicErr_MLE_white_b, 1);
+RMSPE_MLE_colored_white = mean(RMSPE_MLE_colored_white_b, 1);
+CyclicErr_MLE_colored_white = mean(CyclicErr_MLE_colored_white_b, 1);
 
-RMSPE_fisher_colored_colored = mean(RMSPE_fisher_colored_b ,1);
-CyclicErr_fisher_colored_colored = mean(CyclicErr_fisher_colored_b ,1);
+RMSPE_MLE_white_white = mean(RMSPE_MLE_white_white_b, 1);
+CyclicErr_MLE_white_white = mean(CyclicErr_MLE_white_white_b, 1);
 
-RMSPE_fisher_white_white = mean(RMSPE_fisher_white_b ,1);
-CyclicErr_fisher_white_white = mean(CyclicErr_fisher_white_b ,1);
+RMSPE_MLE_white_colored = mean(RMSPE_MLE_white_colored_b, 1);
+CyclicErr_MLE_white_colored = mean(CyclicErr_MLE_white_colored_b, 1);
+
+RMSPE_fisher_colored_colored = mean(RMSPE_fisher_colored_colored_b ,1);
+CyclicErr_fisher_colored_colored = mean(CyclicErr_fisher_colored_colored_b ,1);
+
+RMSPE_fisher_colored_white = mean(RMSPE_fisher_colored_white_b, 1);
+CyclicErr_fisher_colored_white = mean(CyclicErr_fisher_colored_white_b, 1);
+
+RMSPE_fisher_white_white = mean(RMSPE_fisher_white_white_b ,1);
+CyclicErr_fisher_white_white = mean(CyclicErr_fisher_white_white_b ,1);
+
+RMSPE_fisher_white_colored = mean(RMSPE_fisher_white_colored_b, 1);
+CyclicErr_fisher_white_colored = mean(CyclicErr_fisher_white_colored_b, 1);
 
 CRB_white_reg = mean(CRB_white_reg_b ,1);
 CRB_colored_reg = mean(CRB_colored_reg_b ,1);
@@ -249,24 +278,34 @@ CRB_colored_cyc2 = mean(CRB_colored_cyc2_b ,1);
 % grid on;
 % legend('fisher null' , 'fisher colored' , 'MLE null' , 'MLE colored' , 'CRB white' , 'CRB colored');
 
-%% figure to show the convergance of the methods
+%% figure to show the convergance of the methods W-W, C-C
 figure;
 hold on; grid on;
 plot(SNR,theta_og*ones(size(SNR)),'-x','LineWidth', 2)
 plot(SNR,ThetaEst_MLE_white_white,'-o'); plot(SNR,ThetaEst_MLE_colored_colored,'-o');
 plot(SNR,ThetaEst_fisher_white_white,'-*'); plot(SNR,ThetaEst_fisher_colored_colored,'-*');
-legend('Original', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+legend('Original', 'MLE W-W', 'MLE C-C', 'Fisher W-W', 'Fisher C-C')
 xlabel('SNR'); ylabel('\theta'); title('Comparison of the Estimations')
 hold off
 set(gca,'Xscale','log')
-%% figure to compare the MSPE to all kinds of CRB 
+%% figure to show the convergance of the methods W-C
+figure;
+hold on; grid on;
+plot(SNR,theta_og*ones(size(SNR)),'-x','LineWidth', 2)
+plot(SNR,ThetaEst_MLE_white_colored,'-o'); plot(SNR,ThetaEst_MLE_colored_white,'-o');
+plot(SNR,ThetaEst_fisher_white_colored,'-*'); plot(SNR,ThetaEst_fisher_colored_white,'-*');
+legend('Original', 'MLE W-C', 'MLE C-W', 'Fisher W-C', 'Fisher C-W')
+xlabel('SNR'); ylabel('\theta'); title('Comparison of the Estimations')
+hold off
+set(gca,'Xscale','log')
+%% figure to compare the MSPE to all kinds of CRB W-W, C-C
 figure;
 subplot(3,1,1)
 hold on; grid on;
 plot(SNR,CRB_white_reg,'-x','LineWidth', 2);plot(SNR,CRB_colored_reg,'-x','LineWidth', 2);
 plot(SNR,RMSPE_MLE_white_white,'-o'); plot(SNR,RMSPE_MLE_colored_colored,'-o');
 plot(SNR,RMSPE_fisher_white_white,'-*'); plot(SNR,RMSPE_fisher_colored_colored,'-*');
-legend('CRB W', 'CRB C', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+legend('CRB W', 'CRB C', 'MLE W-W', 'MLE C-C', 'Fisher W-W', 'Fisher C-C')
 xlabel('SNR'); ylabel('Regular MSPE'); title('regular CRB vs. MSPE of the Estimations')
 hold off
 set(gca,'Xscale','log')
@@ -279,7 +318,7 @@ hold on; grid on;
 plot(SNR,CRB_white_cyc1,'-x','LineWidth', 2);plot(SNR,CRB_colored_cyc2,'-x','LineWidth', 2);
 plot(SNR,RMSPE_MLE_white_white,'-o'); plot(SNR,RMSPE_MLE_colored_colored,'-o');
 plot(SNR,RMSPE_fisher_white_white,'-*'); plot(SNR,RMSPE_fisher_colored_colored,'-*');
-legend('CRB W', 'CRB C', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+legend('CCRB_1 W', 'CCRB_1 C', 'MLE W-W', 'MLE C-C', 'Fisher W-W', 'Fisher C-C')
 xlabel('SNR'); ylabel('Regular MSPE'); title('cyclic 1 CRB vs. MSPE of the Estimations')
 hold off
 set(gca,'Xscale','log')
@@ -291,20 +330,57 @@ hold on; grid on;
 plot(SNR,CRB_white_cyc2,'-x','LineWidth', 2);plot(SNR,CRB_colored_cyc2,'-x','LineWidth', 2);
 plot(SNR,RMSPE_MLE_white_white,'-o'); plot(SNR,RMSPE_MLE_colored_colored,'-o');
 plot(SNR,RMSPE_fisher_white_white,'-*'); plot(SNR,RMSPE_fisher_colored_colored,'-*');
-legend('CRB W', 'CRB C', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+legend('CCRB_2 W', 'CCRB_2 C', 'MLE W-W', 'MLE C-C', 'Fisher W-W', 'Fisher C-C')
+xlabel('SNR'); ylabel('Regular MSPE'); title('cyclic 2 CRB vs. MSPE of the Estimations')
+hold off
+set(gca,'Xscale','log')
+set(gca,'Yscale','log')
+%% figure to compare the MSPE to all kinds of CRB W-C
+figure;
+subplot(3,1,1)
+hold on; grid on;
+plot(SNR,CRB_white_reg,'-x','LineWidth', 2);plot(SNR,CRB_colored_reg,'-x','LineWidth', 2);
+plot(SNR,RMSPE_MLE_white_colored,'-o'); plot(SNR,RMSPE_MLE_colored_white,'-o');
+plot(SNR,RMSPE_fisher_white_colored,'-*'); plot(SNR,RMSPE_fisher_colored_white,'-*');
+legend('CRB W', 'CRB C', 'MLE W-C', 'MLE C-W', 'Fisher W-C', 'Fisher C-W')
+xlabel('SNR'); ylabel('Regular MSPE'); title('regular CRB vs. MSPE of the Estimations')
+hold off
+set(gca,'Xscale','log')
+set(gca,'Yscale','log')
+
+
+
+subplot(3,1,2)
+hold on; grid on;
+plot(SNR,CRB_white_cyc1,'-x','LineWidth', 2);plot(SNR,CRB_colored_cyc2,'-x','LineWidth', 2);
+plot(SNR,RMSPE_MLE_white_colored,'-o'); plot(SNR,RMSPE_MLE_colored_white,'-o');
+plot(SNR,RMSPE_fisher_white_colored,'-*'); plot(SNR,RMSPE_fisher_colored_white,'-*');
+legend('CCRB_1 W', 'CCRB_1 C', 'MLE W-C', 'MLE C-W', 'Fisher W-C', 'Fisher C-W')
+xlabel('SNR'); ylabel('Regular MSPE'); title('cyclic 1 CRB vs. MSPE of the Estimations')
+hold off
+set(gca,'Xscale','log')
+set(gca,'Yscale','log')
+
+
+subplot(3,1,3)
+hold on; grid on;
+plot(SNR,CRB_white_cyc2,'-x','LineWidth', 2);plot(SNR,CRB_colored_cyc2,'-x','LineWidth', 2);
+plot(SNR,RMSPE_MLE_white_colored,'-o'); plot(SNR,RMSPE_MLE_colored_white,'-o');
+plot(SNR,RMSPE_fisher_white_colored,'-*'); plot(SNR,RMSPE_fisher_colored_white,'-*');
+legend('CCRB_2 W', 'CCRB_2 C', 'MLE W-C', 'MLE C-W', 'Fisher W-C', 'Fisher C-W')
 xlabel('SNR'); ylabel('Regular MSPE'); title('cyclic 2 CRB vs. MSPE of the Estimations')
 hold off
 set(gca,'Xscale','log')
 set(gca,'Yscale','log')
 
-%% figure to compare the cyclic MSPE to all kinds of CRB 
+%% figure to compare the cyclic MSPE to all kinds of CRB W-W, C-C
 figure;
 subplot(3,1,1)
 hold on; grid on;
 plot(SNR,CRB_white_reg,'-x','LineWidth', 2);plot(SNR,CRB_colored_reg,'-x','LineWidth', 2);
 plot(SNR,CyclicErr_MLE_white_white,'-o'); plot(SNR,CyclicErr_MLE_colored_colored,'-o');
 plot(SNR,CyclicErr_fisher_white_white,'-*'); plot(SNR,CyclicErr_fisher_colored_colored,'-*');
-legend('CRB W', 'CRB C', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+legend('CRB W', 'CRB C', 'MLE W-W', 'MLE C-C', 'Fisher W-W', 'Fisher C-C')
 xlabel('SNR'); ylabel('Cyclic Error'); title('Regular CRB vs. CMSPE of the Estimations')
 hold off;
 set(gca,'Xscale','log');set(gca,'Yscale','log')
@@ -314,7 +390,7 @@ hold on; grid on;
 plot(SNR,CRB_white_cyc1,'-x','LineWidth', 2);plot(SNR,CRB_colored_cyc2,'-x','LineWidth', 2);
 plot(SNR,CyclicErr_MLE_white_white,'-o'); plot(SNR,CyclicErr_MLE_colored_colored,'-o');
 plot(SNR,CyclicErr_fisher_white_white,'-*'); plot(SNR,CyclicErr_fisher_colored_colored,'-*');
-legend('CRBC_1 W', 'CRBC_1 C', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+legend('CRBC_1 W', 'CRBC_1 C', 'MLE W-W', 'MLE C-C', 'Fisher W-W', 'Fisher C-C')
 xlabel('SNR'); ylabel('Cyclic Error'); title('cyclic 1 CRB vs. CMSPE of the Estimations')
 hold off
 set(gca,'Xscale','log');set(gca,'Yscale','log')
@@ -324,7 +400,39 @@ hold on; grid on;
 plot(SNR,CRB_white_cyc2,'-x','LineWidth', 2);plot(SNR,CRB_colored_cyc2,'-x','LineWidth', 2);
 plot(SNR,CyclicErr_MLE_white_white,'-o'); plot(SNR,CyclicErr_MLE_colored_colored,'-o');
 plot(SNR,CyclicErr_fisher_white_white,'-*'); plot(SNR,CyclicErr_fisher_colored_colored,'-*');
-legend('CRBC_2 W', 'CRBC_2 C', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+legend('CRBC_2 W', 'CRBC_2 C', 'MLE W-W', 'MLE C-C', 'Fisher W-W', 'Fisher C-C')
+xlabel('SNR'); ylabel('Cyclic Error'); title('cyclic 2 CRB vs. CMSPE of the Estimations')
+hold off
+set(gca,'Xscale','log');set(gca,'Yscale','log')
+
+%% figure to compare the cyclic MSPE to all kinds of CRB W-C
+figure;
+subplot(3,1,1)
+hold on; grid on;
+plot(SNR,CRB_white_reg,'-x','LineWidth', 2);plot(SNR,CRB_colored_reg,'-x','LineWidth', 2);
+plot(SNR,CyclicErr_MLE_white_colored,'-o'); plot(SNR,CyclicErr_MLE_colored_white,'-o');
+plot(SNR,CyclicErr_fisher_white_colored,'-*'); plot(SNR,CyclicErr_fisher_colored_white,'-*');
+legend('CRB W', 'CRB C', 'MLE W-C', 'MLE C-W', 'Fisher W-C', 'Fisher C-W')
+xlabel('SNR'); ylabel('Cyclic Error'); title('Regular CRB vs. CMSPE of the Estimations')
+hold off;
+set(gca,'Xscale','log');set(gca,'Yscale','log')
+
+subplot(3,1,2)
+hold on; grid on;
+plot(SNR,CRB_white_cyc1,'-x','LineWidth', 2);plot(SNR,CRB_colored_cyc2,'-x','LineWidth', 2);
+plot(SNR,CyclicErr_MLE_white_colored,'-o'); plot(SNR,CyclicErr_MLE_colored_white,'-o');
+plot(SNR,CyclicErr_fisher_white_colored,'-*'); plot(SNR,CyclicErr_fisher_colored_white,'-*');
+legend('CRBC_1 W', 'CRBC_1 C', 'MLE W-C', 'MLE C-W', 'Fisher W-C', 'Fisher C-W')
+xlabel('SNR'); ylabel('Cyclic Error'); title('cyclic 1 CRB vs. CMSPE of the Estimations')
+hold off
+set(gca,'Xscale','log');set(gca,'Yscale','log')
+
+subplot(3,1,3)
+hold on; grid on;
+plot(SNR,CRB_white_cyc2,'-x','LineWidth', 2);plot(SNR,CRB_colored_cyc2,'-x','LineWidth', 2);
+plot(SNR,CyclicErr_MLE_white_colored,'-o'); plot(SNR,CyclicErr_MLE_colored_white,'-o');
+plot(SNR,CyclicErr_fisher_white_colored,'-*'); plot(SNR,CyclicErr_fisher_colored_white,'-*');
+legend('CRBC_2 W', 'CRBC_2 C', 'MLE W-C', 'MLE C-W', 'Fisher W-C', 'Fisher C-W')
 xlabel('SNR'); ylabel('Cyclic Error'); title('cyclic 2 CRB vs. CMSPE of the Estimations')
 hold off
 set(gca,'Xscale','log');set(gca,'Yscale','log')
@@ -359,7 +467,7 @@ set(gca,'Xscale','log');set(gca,'Yscale','log')
 % plot(x_Fisher_white, y_Fisher_white, 'x','LineWidth', 1.5)
 % plot(x_Fisher_colored, y_Fisher_colored, 'x','LineWidth', 1.5)
 % xlabel('X', 'FontSize', 10); ylabel('Y', 'FontSize', 10);
-% legend('','Original', 'MLE W', 'MLE C', 'Fisher W', 'Fisher C')
+% legend('','Original', 'MLE W-W', 'MLE C-C', 'Fisher W-W', 'Fisher C-C')
 % title('Comparison of the Estimations on Circle')
 
 
