@@ -30,7 +30,7 @@ theta_colored_f = zeros(Tests,1);
 step_size_white = 1;
 step_size_colored = 1;
 gamma = 0.95;
-acc = 0.00001;
+acc = 1e-5;
 
 [a,da] = model(r_k, K_1, K_3, w);
 
