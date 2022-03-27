@@ -48,15 +48,17 @@ for i = 1 : iters - 1
     end
 
     FIM = FIM * 2;
+    crb = FIM ^ (-1);
+    ccrb = 2 - 2/(sqrt(crb + 1));
     pdf(i+1) = log_likelihood(X_w,s,Rv_inv,M,a_f,v_0,alpha,theta_estimate(i+1));
 
-    theta_estimate(i+1) = wrapToPi(real(theta_estimate(i) + step_size * FIM ^ (-1) * df_theta));
+    theta_estimate(i+1) = wrapToPi(real(theta_estimate(i) + step_size * ccrb * df_theta));
 
     if (pdf(i+1) < pdf(i))
         step_size = step_size * gamma;
     end
 
-    if (abs(theta_estimate(i+1) - theta_estimate(i)) < acc)
+    if ((abs(theta_estimate(i+1) - theta_estimate(i))) < acc)
         theta_estimate(end) = theta_estimate(i+1);
         break;
     end

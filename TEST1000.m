@@ -20,7 +20,7 @@ w = f * ones(M,1);      % the omega_m is constant at this point for all the frqu
 Tests = 10;
 
 theta_og = -pi +2*pi/Tests : 2*pi/Tests : pi;
-theta_0 = pi/4; % starting estimate at 45 deg
+theta_0 = pi/2; % starting estimate at 45 deg
 
 iters = 10000;
 
