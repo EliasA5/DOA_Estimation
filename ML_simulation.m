@@ -7,7 +7,7 @@ clc
 %--------------------------------------------------------------------------
 %% Initialization
 
-M = 40;                          
+M = 100;                          
 P = 25;
 K_1 = 15;
 K_3 = 1;
@@ -25,8 +25,8 @@ sigma_noise = 1;                % for white and colored noise
 data = load("data.mat");
 rm = data.r_m;                  % r_m is loaded form the data matrix we extrcted from the getData python script
 
-acc = 0.001;                    % this is the accuracy for the MLE sweep in method 1
-iters = 1e4;                    % the number of iterations for the Fisher's scoring (second method)
+acc = 0.01;                    % this is the accuracy for the MLE sweep in method 1
+iters = 1e3;                    % the number of iterations for the Fisher's scoring (second method)
 step_size_white = 1;
 step_size_colored = 1;
 gamma = 0.95;
@@ -36,7 +36,7 @@ theta_0 = pi/4-1e-1;                 % starting estimate at 45 deg
 
 %% Estimation 
 
-Tests = 18;
+Tests = 36;
 
 RMSPE_MLE_colored_colored_b = [];
 CyclicErr_MLE_colored_colored_b = [];
@@ -115,9 +115,9 @@ CRB_colored_cyc2 = [];
 % theta_og = -pi +2*pi/Tests : 2*pi/Tests : pi;
 epsilon = 0.1;
 
-SNR = logspace(-2, 6, Tests);
+SNR = logspace(-2, 3, Tests);
 theta_og = pi / 5 + epsilon;
-
+tic;
 parfor i = 1 : Tests
 
     theta = pi / 5 + epsilon;         % theta is in [-pi,pi]
@@ -129,7 +129,7 @@ parfor i = 1 : Tests
 
     % MLE for colored noise-colored
     fun_colored = toMaximizeMLE(a_model, Rv_colored, X_colored, M, P);
-    tic;theta_colored_MLE = real(MaximizeTheta(fun_colored, alpha, v_0, acc));toc;
+    theta_colored_MLE = real(MaximizeTheta(fun_colored, alpha, v_0, acc));
     RMSPE_MLE_colored_colored = [RMSPE_MLE_colored_colored, MSPE(theta, theta_colored_MLE, 'MSPE')];
     CyclicErr_MLE_colored_colored = [CyclicErr_MLE_colored_colored, MSPE(theta, theta_colored_MLE, 'cyclic')];
     ThetaEst_MLE_colored_colored = [ThetaEst_MLE_colored_colored, theta_colored_MLE];
@@ -155,7 +155,7 @@ parfor i = 1 : Tests
     ThetaEst_MLE_white_colored = [ThetaEst_MLE_white_colored, theta_white_MLE];
 
     % Fisher's scoring for colored noise-colored
-    tic;[~,theta_colored_fisher] = Fisher_scoring('syn',theta_0,Rv_colored,v_0,alpha,K,X_colored,iters,step_size_colored,gamma,M,P,a_model,da_model,1e-5);toc;
+    [~,theta_colored_fisher] = Fisher_scoring('syn',theta_0,Rv_colored,v_0,alpha,K,X_colored,iters,step_size_colored,gamma,M,P,a_model,da_model,1e-5);
     RMSPE_fisher_colored_colored = [RMSPE_fisher_colored_colored, MSPE(theta, theta_colored_fisher, 'MSPE')];
     CyclicErr_fisher_colored_colored = [CyclicErr_fisher_colored_colored, MSPE(theta, theta_colored_fisher, 'cyclic')];
     ThetaEst_fisher_colored_colored = [ThetaEst_fisher_colored_colored, theta_colored_fisher];
@@ -187,7 +187,7 @@ parfor i = 1 : Tests
     CRB_white_cyc2 = [CRB_white_cyc2, CRB('cyclic 2',v_0,alpha,theta,Rv_white,M,X_white,a_model,da_model,P)];
     CRB_colored_cyc2 = [CRB_colored_cyc2, CRB('cyclic 2',v_0,alpha,theta,Rv_colored,M,X_colored,a_model,da_model,P)];
 end
-
+toc;
 RMSPE_MLE_colored_colored_b = [RMSPE_MLE_colored_colored_b ; RMSPE_MLE_colored_colored];
 CyclicErr_MLE_colored_colored_b = [CyclicErr_MLE_colored_colored_b; CyclicErr_MLE_colored_colored];
 
