@@ -2,7 +2,7 @@
 function [theta, alpha, v0] = ML_estimator(x, L, r_m, accuracy, theta_data, v0_data, alpha_data, to_maximize)
 
 [M,N] = size(x); %M is number of sensors
-K_3 = 3*floor((M - min([length(unique(rm(:,1))), length(unique(rm(:,2)))]))/3);
+K_3 = 3*floor((M - min([length(unique(r_m(:,1))), length(unique(r_m(:,2)))]))/3);
 K_1 = M - K_3;
 P = ceil(N/L);
 X_w = zeros(P, M, L); %X_w(p,:,m) to address the pth segment and mth frequency
