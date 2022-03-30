@@ -41,7 +41,7 @@ for file = files'
     if(limit && j == 3), break; end
 end
 %close(f)
-res = dir('./results_*.mat');
-save(append('results_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error','real_errors');
+res = dir('./res/ML_simulation_real_results_*.mat');
+save(append('./res/ML_simulation_real_results_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error','real_errors');
 delete(gcp);
 clear all;
