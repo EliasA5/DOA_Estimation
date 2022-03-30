@@ -13,7 +13,7 @@ for j = 1 : M
 
     % estimating s(m) using the MLE of the deterministic signal
     down = a' * Rv_inv * a;   
-    s_j = a' * Rv_inv * x_i / P;   % per the formula only x is a variable of p
+    s_j = a' * Rv_inv * x_i;   % per the formula only x is a variable of p
     s(j) = s_j / down;
 
     dmue = da * s(j);
