@@ -238,7 +238,7 @@ ThetaEst_fisher_white_white_b = [ThetaEst_fisher_white_white_b; ThetaEst_fisher_
 ThetaEst_fisher_white_colored_b = [ThetaEst_fisher_white_colored_b; ThetaEst_fisher_white_colored];
 
 end
-
+theta = pi / 5 + epsilon;   
 RMSPE_MLE_colored_colored = mean(RMSPE_MLE_colored_colored_b, 1);
 CyclicErr_MLE_colored_colored = mean(CyclicErr_MLE_colored_colored_b, 1);
 
@@ -270,14 +270,14 @@ CRB_colored_cyc1 = mean(CRB_colored_cyc1_b ,1);
 CRB_white_cyc2 = mean(CRB_white_cyc2_b ,1);
 CRB_colored_cyc2 = mean(CRB_colored_cyc2_b ,1);
 
-ThetaEst_MLE_colored_colored_mean = mean(wrapToPi(ThetaEst_MLE_colored_colored_b - theta), 1);
-ThetaEst_MLE_colored_white_mean = mean(wrapToPi(ThetaEst_MLE_colored_white_b - theta), 1);
-ThetaEst_MLE_white_white_mean = mean(wrapToPi(ThetaEst_MLE_white_white_b - theta), 1);
-ThetaEst_MLE_white_colored_mean = mean(wrapToPi(ThetaEst_MLE_white_colored_b - theta), 1);
-ThetaEst_fisher_colored_colored_mean = mean(wrapToPi(ThetaEst_fisher_colored_colored_b - theta), 1);
-ThetaEst_fisher_colored_white_mean = mean(wrapToPi(ThetaEst_fisher_colored_white_b - theta), 1);
-ThetaEst_fisher_white_white_mean = mean(wrapToPi(ThetaEst_fisher_white_white_b - theta), 1);
-ThetaEst_fisher_white_colored_mean = mean(wrapToPi(ThetaEst_fisher_white_colored_b - theta), 1);
+ThetaEst_MLE_colored_colored_mean = mean(wrapToPi(ThetaEst_MLE_colored_colored_b - theta_og), 1);
+ThetaEst_MLE_colored_white_mean = mean(wrapToPi(ThetaEst_MLE_colored_white_b - theta_og), 1);
+ThetaEst_MLE_white_white_mean = mean(wrapToPi(ThetaEst_MLE_white_white_b - theta_og), 1);
+ThetaEst_MLE_white_colored_mean = mean(wrapToPi(ThetaEst_MLE_white_colored_b - theta_og), 1);
+ThetaEst_fisher_colored_colored_mean = mean(wrapToPi(ThetaEst_fisher_colored_colored_b - theta_og), 1);
+ThetaEst_fisher_colored_white_mean = mean(wrapToPi(ThetaEst_fisher_colored_white_b - theta_og), 1);
+ThetaEst_fisher_white_white_mean = mean(wrapToPi(ThetaEst_fisher_white_white_b - theta_og), 1);
+ThetaEst_fisher_white_colored_mean = mean(wrapToPi(ThetaEst_fisher_white_colored_b - theta_og), 1);
 
 %--------------------------------------------------------------------------
 
