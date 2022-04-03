@@ -69,6 +69,15 @@ CRB_colored_cyc1_b = [];
 CRB_white_cyc2_b = [];
 CRB_colored_cyc2_b = [];
 
+ThetaEst_MLE_colored_colored_b = [];
+ThetaEst_MLE_colored_white_b = [];
+ThetaEst_MLE_white_white_b = [];
+ThetaEst_MLE_white_colored_b = [];
+ThetaEst_fisher_colored_colored_b = [];
+ThetaEst_fisher_colored_white_b = [];
+ThetaEst_fisher_white_white_b = [];
+ThetaEst_fisher_white_colored_b = [];
+
 %f = waitbar(0,'Please wait...');
 J = 20;
 for j=1:J
@@ -219,6 +228,15 @@ CRB_colored_cyc1_b = [CRB_colored_cyc1_b; CRB_colored_cyc1];
 CRB_white_cyc2_b = [CRB_white_cyc2_b; CRB_white_cyc2];
 CRB_colored_cyc2_b = [CRB_colored_cyc2_b; CRB_colored_cyc2];
 
+ThetaEst_MLE_colored_colored_b = [ThetaEst_MLE_colored_colored_b; ThetaEst_MLE_colored_colored];
+ThetaEst_MLE_colored_white_b = [ThetaEst_MLE_colored_white_b; ThetaEst_MLE_colored_white];
+ThetaEst_MLE_white_white_b = [ThetaEst_MLE_white_white_b; ThetaEst_MLE_white_white];
+ThetaEst_MLE_white_colored_b = [ThetaEst_MLE_white_colored_b; ThetaEst_MLE_white_colored];
+ThetaEst_fisher_colored_colored_b = [ThetaEst_fisher_colored_colored_b; ThetaEst_fisher_colored_colored];
+ThetaEst_fisher_colored_white_b = [ThetaEst_fisher_colored_white_b; ThetaEst_fisher_colored_white];
+ThetaEst_fisher_white_white_b = [ThetaEst_fisher_white_white_b; ThetaEst_fisher_white_white];
+ThetaEst_fisher_white_colored_b = [ThetaEst_fisher_white_colored_b; ThetaEst_fisher_white_colored];
+
 end
 
 RMSPE_MLE_colored_colored = mean(RMSPE_MLE_colored_colored_b, 1);
@@ -251,6 +269,16 @@ CRB_white_cyc1 = mean(CRB_white_cyc1_b ,1);
 CRB_colored_cyc1 = mean(CRB_colored_cyc1_b ,1);
 CRB_white_cyc2 = mean(CRB_white_cyc2_b ,1);
 CRB_colored_cyc2 = mean(CRB_colored_cyc2_b ,1);
+
+ThetaEst_MLE_colored_colored_mean = mean(wrapToPi(ThetaEst_MLE_colored_colored_b - theta), 1);
+ThetaEst_MLE_colored_white_mean = mean(wrapToPi(ThetaEst_MLE_colored_white_b - theta), 1);
+ThetaEst_MLE_white_white_mean = mean(wrapToPi(ThetaEst_MLE_white_white_b - theta), 1);
+ThetaEst_MLE_white_colored_mean = mean(wrapToPi(ThetaEst_MLE_white_colored_b - theta), 1);
+ThetaEst_fisher_colored_colored_mean = mean(wrapToPi(ThetaEst_fisher_colored_colored_b - theta), 1);
+ThetaEst_fisher_colored_white_mean = mean(wrapToPi(ThetaEst_fisher_colored_white_b - theta), 1);
+ThetaEst_fisher_white_white_mean = mean(wrapToPi(ThetaEst_fisher_white_white_b - theta), 1);
+ThetaEst_fisher_white_colored_mean = mean(wrapToPi(ThetaEst_fisher_white_colored_b - theta), 1);
+
 %--------------------------------------------------------------------------
 
 res = dir('./res/ML_simulation_results_*.mat');
