@@ -1,6 +1,7 @@
 
 close all;
 %load('./res/ML_simulation_results_i.mat'); %uncomment and replace i with requested results
+save_pics = false;
 %% figure to show the convergance of the methods W-W, C-C
 figure;
 hold on; grid on;
