@@ -161,6 +161,26 @@ xlabel('SNR'); ylabel('Cyclic Error'); title('cyclic 2 CRB vs. CMSPE of the Esti
 hold off
 set(gca,'Xscale','log');set(gca,'Yscale','log')
 
+%% figure to compare the Bias of the estimators
+figure;
+hold on; grid on;
+plot(SNR,abs(ThetaEst_fisher_colored_colored_mean));plot(SNR,abs(ThetaEst_fisher_colored_white_mean));
+plot(SNR,abs(ThetaEst_fisher_white_white_mean)); plot(SNR,abs(ThetaEst_fisher_white_colored_mean));
+legend('C-C', 'C-W', 'W-W', 'W-W')
+xlabel('SNR'); ylabel('Bias'); title('Bias of fisher-scoring')
+hold off;
+set(gca,'Xscale','log');set(gca,'Yscale','log')
+
+figure;close 
+hold on; grid on;
+plot(SNR,abs(ThetaEst_MLE_colored_colored_mean));plot(SNR,abs(ThetaEst_MLE_colored_white_mean));
+plot(SNR,abs(ThetaEst_MLE_white_white_mean)); plot(SNR,abs(ThetaEst_MLE_white_colored_mean));
+legend('C-C', 'C-W', 'W-W', 'W-W')
+xlabel('SNR'); ylabel('Bias'); title('Bias of ML estimator')
+hold off;
+set(gca,'Xscale','log');set(gca,'Yscale','log')
+
+
 if (save_pics)
 for i=1:6
     name = num2str(i);

@@ -1,7 +1,4 @@
-
-files = dir('./matFiles/signal_*.mat');
-
-function [Rv] = R_fromDataa(x)
+function [Rv] = R_fromData(x)
 x = double(x);
 col = x(:,1);
 Rv =  col * col.';
