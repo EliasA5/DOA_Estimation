@@ -166,23 +166,23 @@ figure;
 hold on; grid on;
 plot(SNR,abs(ThetaEst_fisher_colored_colored_mean));plot(SNR,abs(ThetaEst_fisher_colored_white_mean));
 plot(SNR,abs(ThetaEst_fisher_white_white_mean)); plot(SNR,abs(ThetaEst_fisher_white_colored_mean));
-legend('C-C', 'C-W', 'W-W', 'W-W')
+legend('C-C', 'C-W', 'W-W', 'W-C')
 xlabel('SNR'); ylabel('Bias'); title('Bias of fisher-scoring')
 hold off;
 set(gca,'Xscale','log');set(gca,'Yscale','log')
 
-figure;close 
+figure;
 hold on; grid on;
 plot(SNR,abs(ThetaEst_MLE_colored_colored_mean));plot(SNR,abs(ThetaEst_MLE_colored_white_mean));
 plot(SNR,abs(ThetaEst_MLE_white_white_mean)); plot(SNR,abs(ThetaEst_MLE_white_colored_mean));
-legend('C-C', 'C-W', 'W-W', 'W-W')
+legend('C-C', 'C-W', 'W-W', 'W-C')
 xlabel('SNR'); ylabel('Bias'); title('Bias of ML estimator')
 hold off;
 set(gca,'Xscale','log');set(gca,'Yscale','log')
 
 
 if (save_pics)
-for i=1:6
+for i=1:8
     name = num2str(i);
     saveas(figure(i),append('./pics/',name),'png')
 end
