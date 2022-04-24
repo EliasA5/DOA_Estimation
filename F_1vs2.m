@@ -36,7 +36,7 @@ theta_0 = pi/2;                 % starting estimate at 45 deg
 
 %% Estimation 
 
-Tests = 20;
+Tests = 24;
 
 RMSPE_F_1_colored_colored_b = [];
 CyclicErr_F_1_colored_colored_b = [];
@@ -162,7 +162,7 @@ ThetaEst_F_3_white_colored_b = [];
 % theta_og = -pi +2*pi/Tests : 2*pi/Tests : pi;
 epsilon = 0.1;
 
-SNR = logspace(-1000, -10, Tests);
+SNR = logspace(-10, 2, Tests);
 theta_og = pi - epsilon;
 tic;
 parfor i = 1 : Tests

@@ -35,7 +35,8 @@ theta_0 = pi/4-1e-1;                 % starting estimate at 45 deg
 
 %% Estimation 
 
-Tests = 20;
+Tests = 24;
+alphas = (1:Tests)/Tests * pi/2 - 1/(2*Tests);
 
 RMSPE_MLE_colored_colored_b = [];
 CyclicErr_MLE_colored_colored_b = [];
@@ -128,7 +129,7 @@ theta_og = pi / 5 + epsilon;
 tic;
 parfor i = 1 : Tests
 
-    alpha_0 = pi / 3;
+    alpha_0 = alphas(i);
     theta = pi / 5 + epsilon;         % theta is in [-pi,pi]
     sigma_source = SNR(i) * sigma_noise;
 
