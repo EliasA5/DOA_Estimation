@@ -1,5 +1,5 @@
 
-function [theta, alpha, v0] = ML_estimator_white(x, L, r_m, accuracy, theta_data, v0_data, alpha_data, to_maximize, R)
+function [theta, alpha, v0] = estimator(x, L, r_m, accuracy, theta_data, v0_data, alpha_data, to_maximize, R, type)
 
 [M,N] = size(x); %M is number of sensors
 K_3 = 0; %3*floor((M - min([length(unique(r_m(:,1))), length(unique(r_m(:,2)))]))/3);
@@ -12,7 +12,17 @@ end
 f = 40 * (-L/2:L/2-1)/L;
 
 [a, ~] = model(r_m, K_1, K_3, f);
-fun = toMaximizeMLEWhite(a, [], X_w, M, P);
+% mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
+% R = mcdRv.cov;
+switch type
+    case 'MLE'
+        fun = toMaximizeMLE(a, R, X_w, M, P);
+    case 'MLE_WHITE'
+        fun = toMaximizeMLEWhite(a, [], X_w, M, P);
+    case 'BEAMFORMER'
+        fun = toMaximizeBeamformer(a, [], X_w, M, P);
+end
+
 switch to_maximize
     case 'theta'
         theta = MaximizeTheta(fun, alpha_data, v0_data, accuracy);
