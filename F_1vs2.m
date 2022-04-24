@@ -3,6 +3,7 @@ clear all
 clc
 % this script runs simulations to show the difference in perfomances for
 % the regular Fisher method and the periodic Fisher method
+
 %--------------------------------------------------------------------------
 %% Initialization
 
@@ -35,7 +36,7 @@ theta_0 = pi/2;                 % starting estimate at 45 deg
 
 %% Estimation 
 
-Tests = 400;
+Tests = 20;
 
 RMSPE_F_1_colored_colored_b = [];
 CyclicErr_F_1_colored_colored_b = [];
@@ -82,7 +83,7 @@ CRB_white_cyc2_b = [];
 CRB_colored_cyc2_b = [];
 
 %f = waitbar(0,'Please wait...');
-J = 400;
+J = 200;
 for j=1:J
 %waitbar(j/(J+1), f, append('iter: ', string(j), ' of ', string(J)));
 
