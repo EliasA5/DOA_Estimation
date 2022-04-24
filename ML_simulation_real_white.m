@@ -1,18 +1,16 @@
 close all
 clc
 
-oldpath = addpath('./LIBRA', '-end');
 files = dir('./matFiles/*.mat');
-Rv = load("Rv.mat");
-Rv = Rv.r;
 estimated_theta = [];
 real_thetas = [];
 estimated_error_cyclic = [];
 estimated_error_MSPE = [];
 real_errors = [];
+estimated_alphas = [];
 L = 128;
+alpha_accuracy = 0.01;
 accuracy = 0.001;
-alpha_data = 1;
 j = 1;
 limit = false;
 %loop through all mat files
@@ -33,8 +31,11 @@ for file = files'
         real_theta = doa(i)*pi/180;
         real_error = err(i);
         real_slowness = slow(i);
+        alpha_data = 1;
         real_v0 = 1/real_slowness;
-        [theta_est, alpha_est, v0_est] = ML_estimator(signal, L, r_m, accuracy, real_theta, real_v0, alpha_data, 'theta', Rv);
+        [~, alpha_data, ~] = ML_estimator_white(signal, L, r_m, alpha_accuracy, real_theta, real_v0, alpha_data, 'alpha', []);
+        estimated_alphas = [estimated_alphas, alpha_data];
+        [theta_est, alpha_est, v0_est] = ML_estimator_white(signal, L, r_m, accuracy, real_theta, real_v0, alpha_data, 'theta', []);
         estimated_theta = [estimated_theta, theta_est];
         real_thetas = [real_thetas, real_theta];
         estimated_error_cyclic = [estimated_error_cyclic, MSPE(real_theta, theta_est, 'cyclic')];
@@ -45,7 +46,7 @@ for file = files'
     if(limit && j == 3), break; end
 end
 %close(f)
-res = dir('./res/ML_simulation_real_results_*.mat');
-save(append('./res/ML_simulation_real_white_results_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors');
+res = dir('./res/ML_simulation_real_white_results_*.mat');
+save(append('./res/ML_simulation_real_white_results_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors','estimated_alphas');
 delete(gcp);
 clear all;
