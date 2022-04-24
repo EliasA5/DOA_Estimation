@@ -281,8 +281,8 @@ ThetaEst_fisher_white_colored_mean = mean(wrapToPi(ThetaEst_fisher_white_colored
 
 %--------------------------------------------------------------------------
 
-res = dir('./res/ML_simulation_results_*.mat');
-save(append('./res/ML_simulation_results_', string(length(res)+1)));
+res = dir('./res/incidence_sensitivity_results_*.mat');
+save(append('./res/incidence_sensitivity_results_', string(length(res)+1)));
 delete(gcp);
 clear all;
 
