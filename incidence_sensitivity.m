@@ -79,7 +79,7 @@ ThetaEst_fisher_white_white_b = [];
 ThetaEst_fisher_white_colored_b = [];
 
 %f = waitbar(0,'Please wait...');
-J = 200;
+J = 80;
 for j=1:J
 %waitbar(j/(J+1), f, append('iter: ', string(j), ' of ', string(J)));
 RMSPE_MLE_colored_colored = [];
@@ -124,14 +124,13 @@ CRB_colored_cyc2 = [];
 % theta_og = -pi +2*pi/Tests : 2*pi/Tests : pi;
 epsilon = 0.1;
 
-SNR = logspace(-1, 2, Tests);
 theta_og = pi / 5 + epsilon;
 tic;
 parfor i = 1 : Tests
 
     alpha_0 = alphas(i);
     theta = pi / 5 + epsilon;         % theta is in [-pi,pi]
-    sigma_source = SNR(i) * sigma_noise;
+    sigma_source = SNR * sigma_noise;
 
     [X_colored,~,Rv_colored,~] = synData(rm, theta, alpha, v_0, sigma_source, sigma_noise, M, 'colored', w, K_1, K_3, P);
     [X_white,~,Rv_white,~] = synData(rm, theta, alpha, v_0, sigma_source, sigma_noise, M, 'white', w, K_1, K_3, P);
