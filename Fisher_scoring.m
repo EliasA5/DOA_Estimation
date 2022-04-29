@@ -20,34 +20,22 @@ s = zeros(1,M);
 Rv_inv = pinv(Rv);
 X_w = squeeze(sum(X,1));
 
+a = @(m, theta) a_f(m,theta,alpha,v_0);
+da = @(m, theta) da_f(m,theta,alpha,v_0);
+
 %--------------------------------------------------------------------------
 for i = 1 : iters - 1
     
-    FIM = 0;
-    df_theta = 0;
-
-    for j = 1 : M
-           
-        x_i = X_w(:,j);
-        % calculate the a and a derivative 
-        a = a_f(j, theta_estimate(i), alpha, v_0);
-        da = da_f(j, theta_estimate(i), alpha, v_0);
-
-        % estimating s(m) using the MLE of the deterministic signal
-        down = a' * Rv_inv * a;   
-        s_j = a' * Rv_inv * x_i;   % per the formula only x is a variable of p
-        s(j) = s_j / down;
-
-        mue = a * s(j);
-        dmue = da * s(j);
-        
-
-        df_theta = df_theta + (x_i - mue)' * Rv_inv * dmue + (dmue' * Rv_inv * (x_i - mue)).';
-        FIM = FIM + real(dmue' * Rv_inv * dmue);
-
-    end
-
-    FIM = FIM * 2;
+    A = cell2mat(arrayfun(a,1 : M,theta_estimate(i)*ones(1,M),'uniformoutput',false));
+    dA = cell2mat(arrayfun(da,1 : M,theta_estimate(i)*ones(1,M),'uniformoutput',false));
+    
+    Up = diag(A' * Rv_inv * X_w);
+    Down = diag(A' * Rv_inv * A);
+    s = (Up ./ Down).';
+    Mue = A .* s;
+    dMue = dA .* s;
+    df_theta = sum(2 * real(diag((X_w - Mue)' * Rv_inv * dMue)),1);
+    FIM = sum(2 * real(diag(dMue' * Rv_inv * dMue)));
     crb = FIM ^ (-1);
     ccrb = 2 - 2/(sqrt(crb + 1));
     pdf(i+1) = log_likelihood(X_w,s,Rv_inv,M,a_f,v_0,alpha,theta_estimate(i+1));
@@ -58,7 +46,7 @@ for i = 1 : iters - 1
         step_size = step_size * gamma;
     end
 
-    if ((abs(theta_estimate(i+1) - theta_estimate(i))) < acc)
+    if (mod(abs(theta_estimate(i+1) - theta_estimate(i)),2*pi) < acc)
         theta_estimate(end) = theta_estimate(i+1);
         break;
     end

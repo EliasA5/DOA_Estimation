@@ -1,27 +1,16 @@
-function [crb] = CRB(type,v_0,alpha,theta,Rv,M,X,a_f,da_f,P)
+function [crb] = CRB(type,v_0,alpha,theta,Rv,M,X,a_f,da_f)
 %This function calculates the CRB
 % depending on the type of the bound ('cyclic 1', 'cyclic 2','regular')
 Rv_inv = pinv(Rv);
 X_w = squeeze(sum(X,1));
-s = zeros(1,M);
-FIM = 0;
-for j = 1 : M
-    x_i = X_w(:,j);
-    % calculate the a and a derivative 
-    a = a_f(j, theta, alpha, v_0);
-    da = da_f(j, theta, alpha, v_0);
-
-    % estimating s(m) using the MLE of the deterministic signal
-    down = a' * Rv_inv * a;   
-    s_j = a' * Rv_inv * x_i;   % per the formula only x is a variable of p
-    s(j) = s_j / down;
-
-    dmue = da * s(j);
+A = cell2mat(arrayfun(a_f,1 : M,theta*ones(1,M), alpha*ones(1,M), v_0*ones(1,M),'uniformoutput',false));
+dA = cell2mat(arrayfun(da_f,1 : M,theta*ones(1,M), alpha*ones(1,M), v_0*ones(1,M),'uniformoutput',false));
     
-    FIM = FIM + real(dmue' * Rv_inv * dmue);
-end
-
-FIM = FIM * 2;
+Up = diag(A' * Rv_inv * X_w);
+Down = diag(A' * Rv_inv * A);
+s = (Up ./ Down).';
+dMue = dA .* s;
+FIM = sum(2 * real(diag(dMue' * Rv_inv * dMue)));
 
 switch(type)
     
