@@ -31,10 +31,10 @@ for file = files'
         signal = squeeze(data(i,:,:));
         r_m = squeeze(distances(i,:,:));
         real_theta = doa(i)*pi/180;
-        real_error = err(i);
+        real_error = err(i)*pi/180;
         real_slowness = slow(i);
         real_v0 = 1/real_slowness;
-        [theta_est, alpha_est, v0_est] = ML_estimator(signal, L, r_m, accuracy, real_theta, real_v0, alpha_data, 'theta', Rv);
+        [theta_est, alpha_est, v0_est] = estimator(signal, L, r_m, accuracy, real_theta, real_v0, alpha_data, 'theta', Rv, 'MLE');
         estimated_theta = [estimated_theta, theta_est];
         real_thetas = [real_thetas, real_theta];
         estimated_error_cyclic = [estimated_error_cyclic, MSPE(real_theta, theta_est, 'cyclic')];
@@ -46,6 +46,6 @@ for file = files'
 end
 %close(f)
 res = dir('./res/ML_simulation_real_results_*.mat');
-save(append('./res/ML_simulation_real_white_results_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors');
+save(append('./res/ML_simulation_real_results_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors');
 delete(gcp);
 clear all;

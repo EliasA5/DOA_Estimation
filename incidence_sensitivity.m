@@ -35,7 +35,9 @@ theta_0 = pi/4-1e-1;                 % starting estimate at 45 deg
 
 %% Estimation 
 
-Tests = 20;
+Tests = 24;
+alphas = (1:Tests)/Tests * pi/2 - 1/(2*Tests);
+alpha_0 = alphas(1);
 
 RMSPE_MLE_colored_colored_b = [];
 CyclicErr_MLE_colored_colored_b = [];
@@ -78,7 +80,7 @@ ThetaEst_fisher_white_white_b = [];
 ThetaEst_fisher_white_colored_b = [];
 
 %f = waitbar(0,'Please wait...');
-J = 200;
+J = 80;
 for j=1:J
 %waitbar(j/(J+1), f, append('iter: ', string(j), ' of ', string(J)));
 RMSPE_MLE_colored_colored = [];
@@ -128,7 +130,7 @@ theta_og = pi / 5 + epsilon;
 tic;
 parfor i = 1 : Tests
 
-    alpha_0 = pi / 3;
+    %alpha_0 = alphas(i);
     theta = pi / 5 + epsilon;         % theta is in [-pi,pi]
     sigma_source = SNR(i) * sigma_noise;
 
@@ -281,8 +283,8 @@ ThetaEst_fisher_white_colored_mean = mean(wrapToPi(ThetaEst_fisher_white_colored
 
 %--------------------------------------------------------------------------
 
-res = dir('./res/ML_simulation_results_*.mat');
-save(append('./res/ML_simulation_results_', string(length(res)+1)));
+res = dir('./res/incidence_sensitivity_changingSNR_consAlpha_results_*.mat');
+save(append('./res/incidence_sensitivity_changingSNR_consAlpha_results_', string(length(res)+1)));
 delete(gcp);
 clear all;
 
