@@ -1,15 +1,15 @@
 function [theta_estimate,theta_final] = Fisher_scoring(type_sim,theta_0,Rv,v_0,alpha,K,X,iters,step_size,gamma,M,P,a_f,da_f,acc)
 % This function estimates the DOA (theta) using Fisher's scoring
 
-if (strcmp(type_sim , 'realData'))
-    mcdRv = mcdcov(X.','cor', 1, 'plots', 0);
-    Rv = mcdRv.cov;
-    X_w = zeros(P, K, M); %X_w(p,:,m) to address the pth segment and mth frequency
-    for i = 0:P-1
-        X_w(i+1,:,:) = fft(X(:,i*L+1:min(N, (i+1)*L)), L, 2);
-    end
-    X = X_w;
-end
+% if (strcmp(type_sim , 'realData'))
+%     mcdRv = mcdcov(X.','cor', 1, 'plots', 0);
+%     Rv = mcdRv.cov;
+%     X_w = zeros(P, K, M); %X_w(p,:,m) to address the pth segment and mth frequency
+%     for i = 0:P-1
+%         X_w(i+1,:,:) = fft(X(:,i*L+1:min(N, (i+1)*L)), L, 2);
+%     end
+%     X = X_w;
+% end
 
 theta_estimate = zeros(1,iters);
 theta_estimate(1) = theta_0;

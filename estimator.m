@@ -11,7 +11,10 @@ for i = 0:P-1
 end
 f = 40 * (-L/2:L/2-1)/L;
 
-[a, ~] = model(r_m, K_1, K_3, f);
+iters = 1e3;
+step_size = 1;
+gamma = 0.95;
+[a, da] = model(r_m, K_1, K_3, f);
 % mcdRv = mcdcov(x.','cor', 1, 'plots', 0);
 % R = mcdRv.cov;
 switch type
@@ -21,6 +24,15 @@ switch type
         fun = toMaximizeMLEWhite(a, [], X_w, M, P);
     case 'BEAMFORMER'
         fun = toMaximizeBeamformer(a, [], X_w, M, P);
+    case 'FISHER_SCORING'
+        if(strcmp(to_maximize, 'theta'))
+            [~, theta] = Fisher_scoring('',theta_data,R,v0_data,alpha_data,K_1+3*K_3,X_w,iters,step_size,gamma,L,P,a,da,accuracy);
+            alpha = alpha_data;
+            v0 = v0_data;
+            return
+        else
+            error('fisher only works with to_maximize=theta')
+        end
 end
 
 switch to_maximize
