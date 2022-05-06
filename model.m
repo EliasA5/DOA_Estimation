@@ -4,6 +4,12 @@ function [a, da] = model(r_m, K_1, K_3, w)
 %K_1 the number of 1d sensors
 %k_2 the number of 3d sensors
 %w is a vector of frequencies
+
+% returns
+% a: a function that calculates the steering vector.
+% da: a function that calculates the derivative of the steering vector.
+% both take 4 inputs: m the index of the frequency in the w input vector
+% theta,alpha,v_0: doa angle, incidence angle, the speed of the wave respectivly.
 e_u = @(theta,alpha) [sin(theta)*sin(alpha); cos(theta)*sin(alpha); cos(alpha)];
 e_z = @(theta, alpha) cos(alpha);
 u = @(theta, alpha, v_0) 1/v_0 * e_u(theta,alpha);
