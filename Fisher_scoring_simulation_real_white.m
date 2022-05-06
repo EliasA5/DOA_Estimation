@@ -1,5 +1,3 @@
-close all
-clc
 
 files = dir('./matFiles/*.mat');
 estimated_theta = [];
@@ -36,7 +34,7 @@ for file = files'
         real_v0 = 1/real_slowness;
         [~, alpha_data, ~] = estimator(signal, L, r_m, alpha_accuracy, real_theta, real_v0, alpha_data, 'alpha', Rv, 'MLE_WHITE');
         estimated_alphas = [estimated_alphas, alpha_data];
-        [theta_est, alpha_est, v0_est] = estimator(signal, L, r_m, accuracy, real_theta, real_v0, alpha_data, 'theta', Rv, 'MLE_WHITE');
+        [theta_est, alpha_est, v0_est] = estimator(signal, L, r_m, accuracy, real_theta, real_v0, alpha_data, 'theta', Rv, 'FISHER_SCORING');
         estimated_theta = [estimated_theta, theta_est];
         real_thetas = [real_thetas, real_theta];
         estimated_error_cyclic = [estimated_error_cyclic, MSPE(real_theta, theta_est, 'cyclic')];
@@ -47,7 +45,7 @@ for file = files'
     if(limit && j == 3), break; end
 end
 %close(f)
-res = dir('./res/ML_simulation_real_white_results_*.mat');
-save(append('./res/ML_simulation_real_white_results_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors','estimated_alphas');
+res = dir('./res/Fisher_scoring_simulation_real_white_*.mat');
+save(append('./res/Fisher_scoring_simulation_real_white_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors','estimated_alphas');
 delete(gcp);
 clear all;
