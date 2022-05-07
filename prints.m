@@ -1,5 +1,10 @@
 
 close all;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: Prints the results of ML_simulation.
+% Instructions: load the output file of ML_simulation then run this
+% function.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load('./res/ML_simulation_results_i.mat'); %uncomment and replace i with requested results
 save_pics = false;
 %% figure to show the convergance of the methods W-W, C-C

@@ -1,5 +1,9 @@
 close all
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: runs the ML estimator on real data assuming white noise.
+% Note: Since this simulation assumes white noise we can take Rv to be the
+% identity matrix.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 files = dir('./matFiles/*.mat');
 estimated_theta = [];
 real_thetas = [];

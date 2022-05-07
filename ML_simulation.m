@@ -1,10 +1,10 @@
 close all
 clc
-%--------------------------------------------------------------------------
-% This scripts performs the comparison between the MLE and Fisher's scoring
-% for white noise and colored noise
-% All signal's are in the frequency domain
-%--------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: This script performs the comparison between the MLE and Fisher's
+% scoring for white and colored noise.
+% All signal's are in the frequency domain.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Initialization
 
 M = 100;                          

@@ -1,6 +1,8 @@
 function [theta_estimate,theta_final] = Fisher_scoring(type_sim,theta_0,Rv,v_0,alpha,K,X,iters,step_size,gamma,M,P,a_f,da_f,acc)
-% This function estimates the DOA (theta) using Fisher's scoring
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: a function that estimates the DOA (theta) using Fisher's
+% scoring method.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % if (strcmp(type_sim , 'realData'))
 %     mcdRv = mcdcov(X.','cor', 1, 'plots', 0);
 %     Rv = mcdRv.cov;
