@@ -40,6 +40,9 @@ switch to_maximize
         theta = MaximizeTheta(fun, alpha_data, v0_data, accuracy);
         alpha = alpha_data;
         v0 = v0_data;
+    case 'theta_alpha'
+        [theta, alpha] = MaximizeThetaAlpha(fun, v0_data, accuracy/4);
+        v0 = v0_data;
     case 'vel'
         theta = theta_data;
         alpha = alpha_data;
