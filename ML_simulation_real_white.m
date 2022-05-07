@@ -1,5 +1,4 @@
 close all
-clc
 
 files = dir('./matFiles/*.mat');
 estimated_theta = [];
@@ -11,7 +10,7 @@ estimated_alphas = [];
 L = 128;
 alpha_accuracy = 0.01;
 accuracy = 0.001;
-j = 1;
+j = 0;
 limit = false;
 %loop through all mat files
 %f = waitbar(0,'Please wait...');
@@ -42,8 +41,9 @@ for file = files'
         estimated_error_cyclic = [estimated_error_cyclic, MSPE(real_theta, theta_est, 'cyclic')];
         estimated_error_MSPE = [estimated_error_MSPE, MSPE(real_theta, theta_est, 'MSPE')];
         real_errors = [real_errors, real_error];
+        j = j+1;
     end
-    j = j+1;
+
     if(limit && j == 3), break; end
 end
 %close(f)
