@@ -1,3 +1,30 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: This function runs the estimator given by type on the input
+% data, returns all 3 estimated parameters.
+% Inputs:
+%   x: The signal data in time domain, with (K,N) dimensions where K is the
+%   number of sensors and N is the number of samples
+%   L: The number of frequencies in each segment, this parameter is used to
+%   perform DFT on x vector by dividing x into N/L segments and performing
+%   DFT on each segment, preferably L is a power of 2.
+%   r_m: The distances matrix of size (3,K).
+%   accuracy: Used to define the accuracy of the estimator, for theta/alpha
+%   this value can be of magnitude of 1e-3, for v0 estimation this value
+%   needs to be on the order of 1e2.
+%   theta_data: Starting value for theta, or real value when estimating the
+%   other parameters.
+%   v0_data: Same as above for v0.
+%   alpha_data: Same as above for alpha.
+%   to_maximize: This variable is used to decide what value to estimate,
+%   can have the next values: ['theta', 'theta_alpha', 'vel', 'alpha',
+%   'all'].
+%   R: The covariance matrix, can either be supplied from real data by
+%   estimating it using MSE or can be the identity matrix (assuming white
+%   noise).
+%   type: The type of estimator to use, can have the next values: ['MLE',
+%   'MLE_WHITE', 'BEAMFORMER', 'FISHER_SCORING'], note that fisher scoring
+%   only works with to_maximize=theta.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [theta, alpha, v0] = estimator(x, L, r_m, accuracy, theta_data, v0_data, alpha_data, to_maximize, R, type)
 

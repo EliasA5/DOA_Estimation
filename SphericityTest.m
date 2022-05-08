@@ -1,9 +1,11 @@
 close all
 clear all
 clc
-%--------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: This script runs the sphericity test on mount meron data.
+% Note: Inconclusive results.
 % classifing every measurement as colored (= positive) if psi < c and white = false) if psi > c
-%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 K_1 = 15;
 K_3 = 1;
 c = 10^(-100);

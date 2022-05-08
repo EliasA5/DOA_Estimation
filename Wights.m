@@ -1,7 +1,10 @@
 clear all
 close all
 clc
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: calculates weights for graph signal proccessing, is yet to be
+% used.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %------------------------------------------------------
 data = load("L_A.mat");
 L_A = data.weights;

@@ -1,3 +1,9 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: Same as MaximizeTheta but maximizes with respect to theta and
+% alpha.
+% Note: Run with low acc with magnitude 1e-1, else it will take alot of
+% time.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [theta, alpha] = MaximizeThetaAlpha(fun, v_0, acc)
     a_vec = 0:acc:pi/2;
     t_vec = 0:acc*4:2*pi;

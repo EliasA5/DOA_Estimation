@@ -1,3 +1,21 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: This function generates synthetic sensor data,
+% Inputs:
+%   rm: The distances matrix of size (3,K), where K is the number of
+%   Sensors.
+%   theta: DOA angle.
+%   alpha: Incidence angle.
+%   v0: Wave velocity.
+%   sigma_squared: Power of the signal.
+%   lambda_noise: Power of the noise.
+%   num_samples: Number of samples in each segment P.
+%   noise_type: The type of generated noise, can have the values:
+%   ['colored', 'white'].
+%   f: The frequency of the wave.
+%   K_1: The number of 1d sensors.
+%   K_3: The number of 3d sensors.
+%   P: The numbner of segments in the data.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [X_w,signal,Q,a] = synData(rm, theta, alpha, v0, sigma_squared, lambda_noise, num_samples, noise_type, f, K_1, K_3, P)
     % buildes syn data in the frequency domain,
 zx = rm(:,1);zy = rm(:,2);

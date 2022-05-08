@@ -1,3 +1,17 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: This function returns the function that we need to maximize for
+% the MLE estimator, feed it's output to MaximizeTheta.
+% Inputs:
+%   a: The function used to calculate the model, can be obtained from
+%   model.m file.
+%   R: The covariance matrix, this function assumes white noise, so the
+%   covariance matrix gets canceled and is unused, but kept for compliance
+%   for other functions of the same purpose.
+%   X_w: The signal in the frequency domain.
+%   M: The number of frequencies, in other files this is given by L.
+%   P: The number of segments.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function [fun] = toMaximizeMLEWhite(a, R, X_w, M, P)
     X_w_p = squeeze(sum(X_w,1));
     fun = @(theta, alpha, v_0) d(theta, alpha, v_0, a, [], X_w_p, M, P);
