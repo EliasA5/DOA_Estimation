@@ -16,8 +16,10 @@ alpha_accuracy = 0.01;
 accuracy = 0.001;
 j = 0;
 limit = false;
+types = ["MLE_WHITE", "BEAMFORMER", "FISHER_SCORING", "FISHER_SCORING_ORIG"];
 %loop through all mat files
 %f = waitbar(0,'Please wait...');
+for type = types
 for file = files'
     load(fullfile(file.folder, file.name));
     %waitbar(j/length(files), f, append('working on: ', file.name, ', iter: ', string(j)));
@@ -39,7 +41,7 @@ for file = files'
         real_v0 = 1/real_slowness;
         [~, alpha_data, ~] = estimator(signal, L, r_m, alpha_accuracy, real_theta, real_v0, alpha_data, 'alpha', Rv, 'MLE_WHITE');
         estimated_alphas = [estimated_alphas, alpha_data];
-        [theta_est, alpha_est, v0_est] = estimator(signal, L, r_m, accuracy, real_theta, real_v0, alpha_data, 'theta', Rv, 'MLE_WHITE');
+        [theta_est, alpha_est, v0_est] = estimator(signal, L, r_m, accuracy, real_theta, real_v0, alpha_data, 'theta', Rv, type);
         estimated_theta = [estimated_theta, theta_est];
         real_thetas = [real_thetas, real_theta];
         estimated_error_cyclic = [estimated_error_cyclic, MSPE(real_theta, theta_est, 'cyclic')];
@@ -51,7 +53,9 @@ for file = files'
     if(limit && j == 3), break; end
 end
 %close(f)
-res = dir('./res/ML_simulation_real_white_results_*.mat');
-save(append('./res/ML_simulation_real_white_results_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors','estimated_alphas');
+fprintf("finished %s\n", type);
+res = dir(append('./res/', type, '_simulation_real_white_results_*.mat'));
+save(append('./res/', type, '_simulation_real_white_results_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors','estimated_alphas');
+end
 delete(gcp);
 clear all;

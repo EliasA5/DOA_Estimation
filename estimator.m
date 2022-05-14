@@ -21,9 +21,9 @@
 %   R: The covariance matrix, can either be supplied from real data by
 %   estimating it using MSE or can be the identity matrix (assuming white
 %   noise).
-%   type: The type of estimator to use, can have the next values: ['MLE',
-%   'MLE_WHITE', 'BEAMFORMER', 'FISHER_SCORING'], note that fisher scoring
-%   only works with to_maximize=theta.
+%   type: The type of estimator to use, can have the next values:
+%   types = ["MLE", "MLE_WHITE", "BEAMFORMER", "FISHER_SCORING"], note that
+%   fisher scoring only works with to_maximize=theta.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [theta, alpha, v0] = estimator(x, L, r_m, accuracy, theta_data, v0_data, alpha_data, to_maximize, R, type)
@@ -54,6 +54,15 @@ switch type
     case 'FISHER_SCORING'
         if(strcmp(to_maximize, 'theta'))
             [~, theta] = Fisher_scoring('',theta_data,R,v0_data,alpha_data,K_1+3*K_3,X_w,iters,step_size,gamma,L,P,a,da,accuracy);
+            alpha = alpha_data;
+            v0 = v0_data;
+            return
+        else
+            error('fisher only works with to_maximize=theta')
+        end
+    case 'FISHER_SCORING_ORIG'
+        if(strcmp(to_maximize, 'theta'))
+            [~, theta] = Fisher_scoring_reg('',theta_data,R,v0_data,alpha_data,K_1+3*K_3,X_w,iters,step_size,gamma,L,P,a,da,accuracy);
             alpha = alpha_data;
             v0 = v0_data;
             return
