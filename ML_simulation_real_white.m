@@ -20,6 +20,7 @@ types = ["MLE_WHITE", "BEAMFORMER", "FISHER_SCORING", "FISHER_SCORING_ORIG"];
 %loop through all mat files
 %f = waitbar(0,'Please wait...');
 for type = types
+tic;
 for file = files'
     load(fullfile(file.folder, file.name));
     %waitbar(j/length(files), f, append('working on: ', file.name, ', iter: ', string(j)));
@@ -53,9 +54,16 @@ for file = files'
     if(limit && j == 3), break; end
 end
 %close(f)
-fprintf("finished %s\n", type);
+toc;
+fprintf("finished %d samples using %s\n", length(real_thetas), type);
 res = dir(append('./res/', type, '_simulation_real_white_results_*.mat'));
 save(append('./res/', type, '_simulation_real_white_results_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors','estimated_alphas');
+estimated_theta = [];
+real_thetas = [];
+estimated_error_cyclic = [];
+estimated_error_MSPE = [];
+real_errors = [];
+estimated_alphas = [];
 end
 delete(gcp);
 clear all;

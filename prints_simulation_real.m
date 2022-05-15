@@ -6,13 +6,13 @@
 % Instructions: load the output file of simulation then run
 % this function.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-load('./res/BEAMFORMER_simulation_real_white_results_3.mat'); %uncomment and replace i with requested results
+load('./res/BEAMFORMER_simulation_real_white_results_1min_1.mat'); %uncomment and replace i with requested results
 save_pics = false;
 samples_for_mean = 30;
 fig2 = figure;sgtitle("error histrograms");
-subplot(4,2,1);histogram(estimated_error_cyclic);title("cyclic beamformer");
+subplot(4,2,1);histogram(estimated_error_cyclic, 0:0.1:4.2);title("cyclic beamformer");
 xlabel("bin");ylabel("error value")
-subplot(4,2,2);histogram(estimated_error_MSPE);title("MSPE beamformer");
+subplot(4,2,2);histogram(estimated_error_MSPE, 0:0.2:10);title("MSPE beamformer");
 xlabel("bin");ylabel("error value")
 
 fig = figure;sgtitle("errors")
@@ -25,11 +25,11 @@ hold on;plot(cyclic);plot(MSPE);plot(real_err);
 xlabel('# of sample');ylabel('mean error');
 legend('cyclic', 'MSPE', 'real');
 
-load('./res/MLE_WHITE_simulation_real_white_results_2.mat');
+load('./res/MLE_WHITE_simulation_real_white_results_1min_1.mat');
 figure(fig2);
-subplot(4,2,3);histogram(estimated_error_cyclic);title("cyclic ML");
+subplot(4,2,3);histogram(estimated_error_cyclic, 0:0.1:4.2);title("cyclic ML");
 xlabel("bin");ylabel("error value")
-subplot(4,2,4);histogram(estimated_error_MSPE);title("MSPE ML");
+subplot(4,2,4);histogram(estimated_error_MSPE, 0:0.2:10);title("MSPE ML");
 xlabel("bin");ylabel("error value")
 
 figure(fig);
@@ -41,11 +41,11 @@ hold on;plot(cyclic);plot(MSPE);plot(real_err);
 xlabel('# of sample');ylabel('mean error');
 legend('cyclic', 'MSPE', 'real');
 
-load('./res/FISHER_SCORING_simulation_real_white_results_2.mat');
+load('./res/FISHER_SCORING_simulation_real_white_results_1min_1.mat');
 figure(fig2);
-subplot(4,2,5);histogram(estimated_error_cyclic);title("cyclic fisher scoring");
+subplot(4,2,5);histogram(estimated_error_cyclic, 0:0.1:4.2);title("cyclic fisher scoring");
 xlabel("bin");ylabel("error value")
-subplot(4,2,6);histogram(estimated_error_MSPE);title("MSPE fisher scoring");
+subplot(4,2,6);histogram(estimated_error_MSPE, 0:0.2:10);title("MSPE fisher scoring");
 xlabel("bin");ylabel("error value")
 
 figure(fig);
@@ -57,11 +57,11 @@ hold on;plot(cyclic);plot(MSPE);plot(real_err);
 xlabel('# of sample');ylabel('mean error');
 legend('cyclic', 'MSPE', 'real');
 
-load('./res/FISHER_SCORING_ORIG_simulation_real_white_results_1.mat');
+load('./res/FISHER_SCORING_ORIG_simulation_real_white_results_1min_1.mat');
 figure(fig2);
-subplot(4,2,7);histogram(estimated_error_cyclic);title("cyclic orig fisher scoring");
+subplot(4,2,7);histogram(estimated_error_cyclic, 0:0.1:4.2);title("cyclic orig fisher scoring");
 xlabel("bin");ylabel("error value")
-subplot(4,2,8);histogram(estimated_error_MSPE);title("MSPE orig fisher scoring");
+subplot(4,2,8);histogram(estimated_error_MSPE, 0:0.2:10);title("MSPE orig fisher scoring");
 xlabel("bin");ylabel("error value")
 
 figure(fig);
@@ -76,8 +76,8 @@ legend('cyclic', 'MSPE', 'real');
 fig.Position(3:4) = [1600, 480];
 movegui(fig, 'north');
 if (save_pics)
-for i=1:8
-    name = num2str(i);
+for i=[3]
+    name = append("simulation_real_white_1min_1");
     saveas(figure(i),append('./pics/',name),'png')
 end
 end
