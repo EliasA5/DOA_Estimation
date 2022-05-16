@@ -119,15 +119,6 @@ function [val] = MaximizeV(fun, theta, alpha, acc)
     val = v_vec(I);
 end
 
-function [val] = MaximizeAlpha(fun, theta, v_0, acc)
-    a_vec = -pi:acc:0;
-    Thetas = ones(size(a_vec)) * theta;
-    V_0 = ones(size(a_vec)) * v_0;
-    max_vals = arrayfun(fun, Thetas, a_vec, V_0);
-    [~, I] = max(max_vals);
-    val = a_vec(I);
-
-end
 
 
 
