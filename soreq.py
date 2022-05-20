@@ -68,10 +68,11 @@ for file in tqdm(files):
     removed = []
     # delete the sensors with no metadata
     for i, tr in enumerate(stream):
-        try: meta = inv.get_channel_metadata(tr.get_id())
+        try:
+            meta = inv.get_channel_metadata(tr.get_id())
+            removed.append(i)
         except Exception:
             stream.remove(stream[i])
-            removed.append(i)
     print(removed)
     print('remaining sensors: ', stream.count())
 
@@ -94,6 +95,7 @@ for file in tqdm(files):
     slo = []
     stv = []
     inc = []
+    snr = []
 
     # get matches and corresponding info for each file
     pre = 40*60   # number of samples before the event
@@ -142,6 +144,7 @@ for file in tqdm(files):
                     slo.append(1/(1000*degrees2kilometers(1/arrival.SLOW[np.where(arrival.ARID == arid)[0]].values)))
                     stv.append(distances)
                     inc.append(arrival.EMA[np.where(assoc.ARID == arid)[0]].values)
+                    snr.append(arrival.SNR[np.where(assoc.ARID == arid)[0]].values)
 
     #print(file, len(doa))
 
@@ -160,5 +163,6 @@ for file in tqdm(files):
     mdict['slow'] = slo
     mdict['removed'] = removed
     mdict['incidence'] = inc
+    mdict['snr'] = snr
 
     savemat(os.path.join(matRoot,'mdict_' + file[:-7] + '.mat'), mdict)
