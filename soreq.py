@@ -33,7 +33,10 @@ from scipy.io import savemat
 
 from tqdm import tqdm
 
-
+try:
+    os.chdir('./Geres')
+except Exception:
+    pass
 #****************#
 #   load files   #
 #****************#
@@ -53,6 +56,12 @@ print([str(day) + ': ' + str(nums[i]) for i, day in enumerate(days)])
 
 inv = read_inventory('GERES.xml')
 
+# save data set in matFiles folder
+matRoot = 'matFiles_240secs'
+try:
+    os.mkdir(matRoot)
+except Exception:
+    pass
 
 #****************************#
 #   loop through all files   #
@@ -73,8 +82,8 @@ for file in tqdm(files):
             removed.append(i)
         except Exception:
             stream.remove(stream[i])
-    print(removed)
-    print('remaining sensors: ', stream.count())
+    # print(removed)
+    # print('remaining sensors: ', stream.count())
 
     # # remove (sensitivity and) the response of the sensors from the data
     # stream.remove_sensitivity(inv)
@@ -98,8 +107,10 @@ for file in tqdm(files):
     snr = []
 
     # get matches and corresponding info for each file
-    pre = 40*60   # number of samples before the event
-    snapshots = 40*240   # number of (time) samples in total
+    secs_before = 60
+    secs_total = 240
+    pre = 40*secs_before   # number of samples before the event
+    snapshots = 40*secs_total   # number of (time) samples in total
     for arid, time in zip(arrival.ARID, arrival.LDDATE):
 
         if arid in assoc.ARID.values:
@@ -147,13 +158,6 @@ for file in tqdm(files):
                     snr.append(arrival.SNR[np.where(assoc.ARID == arid)[0]].values)
 
     #print(file, len(doa))
-
-    # save data set in matFiles folder
-    matRoot = 'matFiles2'
-    try:
-        os.mkdir(matRoot)
-    except Exception:
-        pass
 
     mdict = {}
     mdict['data'] = sig

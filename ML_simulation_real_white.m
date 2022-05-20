@@ -4,7 +4,11 @@ close all
 % Note: Since this simulation assumes white noise we can take Rv to be the
 % identity matrix.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-files = dir('./matFiles/*.mat');
+result_dir = ["./res/"];
+simulation_property = ["8secs", "middle_8secs", "40secs"];
+
+for sim_prop = simulation_property
+files = dir(append('./matFiles_' , sim_prop, '/*.mat'));
 estimated_theta = [];
 real_thetas = [];
 estimated_error_cyclic = [];
@@ -18,12 +22,10 @@ j = 0;
 limit = false;
 types = ["MLE_WHITE", "BEAMFORMER", "FISHER_SCORING", "FISHER_SCORING_ORIG"];
 %loop through all mat files
-%f = waitbar(0,'Please wait...');
 for type = types
 tic;
 for file = files'
     load(fullfile(file.folder, file.name));
-    %waitbar(j/length(files), f, append('working on: ', file.name, ', iter: ', string(j)));
     data_size = size(data);
     err_size = size(err);
     if(err_size(2) ~= 1)
@@ -55,15 +57,17 @@ for file = files'
 end
 %close(f)
 toc;
-fprintf("finished %d samples using %s\n", length(real_thetas), type);
-res = dir(append('./res/', type, '_simulation_real_white_results_*.mat'));
-save(append('./res/', type, '_simulation_real_white_results_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors','estimated_alphas');
+fprintf("finished %d samples using %s, sample type: %s\n", length(real_thetas), type, sim_prop);
+res = dir(append(result_dir, type, '_simulation_real_white_results_', sim_prop, '_*.mat'));
+save(append(result_dir, type, '_simulation_real_white_results_', sim_prop, '_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors','estimated_alphas');
 estimated_theta = [];
 real_thetas = [];
 estimated_error_cyclic = [];
 estimated_error_MSPE = [];
 real_errors = [];
 estimated_alphas = [];
+end
+
 end
 delete(gcp);
 clear all;

@@ -36,7 +36,7 @@ X_w = zeros(P, M, L); %X_w(p,:,m) to address the pth segment and mth frequency
 for i = 0:P-1
     X_w(i+1,:,:) = fft(x(:,i*L+1:min(N, (i+1)*L)), L, 2);
 end
-f = 40/(2*pi) * (-L/2:L/2-1)/L;ss
+f = 40/(2*pi) * (-L/2:L/2-1)/L;
 
 iters = 1e3;
 step_size = 1;
