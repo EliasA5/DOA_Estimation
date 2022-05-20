@@ -5,7 +5,7 @@ close all
 % identity matrix.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 result_dir = ["./res/"];
-simulation_property = ["8secs", "middle_8secs", "40secs"];
+simulation_property = ["8secs", "middle_8secs", "40secs", "80secs", "240secs"];
 
 for sim_prop = simulation_property
 files = dir(append('./matFiles_' , sim_prop, '/*.mat'));
