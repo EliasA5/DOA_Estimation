@@ -15,6 +15,7 @@ estimated_error_cyclic = [];
 estimated_error_MSPE = [];
 real_errors = [];
 estimated_alphas = [];
+snrs = [];
 L = 128;
 alpha_accuracy = 0.01;
 accuracy = 0.001;
@@ -33,13 +34,14 @@ for file = files'
         continue
     end
     %for each arrival
-    parfor i=1:data_size(1)
+    for i=1:data_size(1)
         signal = squeeze(data(i,:,:));
         Rv = eye(height(signal));
         r_m = squeeze(distances(i,:,:));
         real_theta = doa(i)*pi/180;
         real_error = err(i)*pi/180;
         real_slowness = slow(i);
+        snrs = [snrs, snr(i)];
         alpha_data = pi/3;
         real_v0 = 1/real_slowness;
         [~, alpha_data, ~] = estimator(signal, L, r_m, alpha_accuracy, real_theta, real_v0, alpha_data, 'alpha', Rv, 'MLE_WHITE');
@@ -59,7 +61,7 @@ end
 toc;
 fprintf("finished %d samples using %s, sample type: %s\n", length(real_thetas), type, sim_prop);
 res = dir(append(result_dir, type, '_simulation_real_white_results_', sim_prop, '_*.mat'));
-save(append(result_dir, type, '_simulation_real_white_results_', sim_prop, '_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors','estimated_alphas');
+save(append(result_dir, type, '_simulation_real_white_results_', sim_prop, '_', string(length(res)+1)), 'estimated_theta','real_thetas','estimated_error_cyclic','estimated_error_MSPE','real_errors','estimated_alphas', 'snrs');
 estimated_theta = [];
 real_thetas = [];
 estimated_error_cyclic = [];

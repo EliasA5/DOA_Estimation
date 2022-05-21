@@ -7,9 +7,12 @@
 save_pics = false;
 samples_for_mean = 30;
 result_dir = ["./res/"];
-simulation_properties = ["8secs", "middle_8secs", "40secs", "80secs"];
+simulation_properties = ["8secs", "middle_8secs", "40secs", "80secs", "240secs"];
 getFullDir = @(file) append(file.folder, '\', file.name);
 getInfo = @(error) sprintf("\nmean: %f, std: %f", mean(error), std(error));
+
+fig1=figure;title("SNR histogram");
+histogram(snrs);
 
 for simulation_property = simulation_properties
 fig2 = figure;sgtitle(append("error histrograms ", simulation_property));
