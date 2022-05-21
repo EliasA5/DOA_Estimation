@@ -34,7 +34,7 @@ for file = files'
         continue
     end
     %for each arrival
-    for i=1:data_size(1)
+    parfor i=1:data_size(1)
         signal = squeeze(data(i,:,:));
         Rv = eye(height(signal));
         r_m = squeeze(distances(i,:,:));
