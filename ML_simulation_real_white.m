@@ -68,6 +68,7 @@ estimated_error_cyclic = [];
 estimated_error_MSPE = [];
 real_errors = [];
 estimated_alphas = [];
+snrs = [];
 end
 
 end
