@@ -37,10 +37,10 @@ est_error = [];
 
 for i=1:length(beamformers)
 load(getFullDir(beamformers(i)));
-est_alphas_mean = [est_alphas_mean; mean(estimated_alphas(1:max(1, end-1), :), 1)];
-est_errors_mean = [est_errors_mean; mean(estimated_error_cyclic(1:max(1, end-1), :), 1)];
-est_alpha = [est_alpha, estimated_alphas(end)];
-est_error = [est_error, estimated_error_cyclic(end)];
+est_alphas_mean = [est_alphas_mean; mean(estimated_alphas(:, 1:max(1, end-1)), 1)];
+est_errors_mean = [est_errors_mean; mean(estimated_error_cyclic(:, 1:max(1, end-1)), 1)];
+est_alpha = [est_alpha; estimated_alphas(:, end)];
+est_error = [est_error; estimated_error_cyclic(:, end)];
 end
 figure(fig_beamformer); hold on;
 stem(mean(est_alphas_mean,1), mean(est_errors_mean,1), 'o');
@@ -54,10 +54,10 @@ est_error = [];
 
 for i=1:length(mle_whites)
 load(getFullDir(mle_whites(i)));
-est_alphas_mean = [est_alphas_mean; mean(estimated_alphas(1:max(1, end-1), :), 1)];
-est_errors_mean = [est_errors_mean; mean(estimated_error_cyclic(1:max(1, end-1), :), 1)];
-est_alpha = [est_alpha, estimated_alphas(end)];
-est_error = [est_error, estimated_error_cyclic(end)];
+est_alphas_mean = [est_alphas_mean; mean(estimated_alphas(:, 1:max(1, end-1)), 1)];
+est_errors_mean = [est_errors_mean; mean(estimated_error_cyclic(:, 1:max(1, end-1)), 1)];
+est_alpha = [est_alpha; estimated_alphas(:, end)];
+est_error = [est_error; estimated_error_cyclic(:, end)];
 end
 figure(fig_mle_whites); hold on;
 stem(mean(est_alphas_mean,1), mean(est_errors_mean,1), 'o');
@@ -71,10 +71,10 @@ est_error = [];
 
 for i=1:length(periodic_fisher_scorings)
 load(getFullDir(periodic_fisher_scorings(i)));
-est_alphas_mean = [est_alphas_mean; mean(estimated_alphas(1:max(1, end-1), :), 1)];
-est_errors_mean = [est_errors_mean; mean(estimated_error_cyclic(1:max(1, end-1), :), 1)];
-est_alpha = [est_alpha, estimated_alphas(end)];
-est_error = [est_error, estimated_error_cyclic(end)];
+est_alphas_mean = [est_alphas_mean; mean(estimated_alphas(:, 1:max(1, end-1)), 1)];
+est_errors_mean = [est_errors_mean; mean(estimated_error_cyclic(:, 1:max(1, end-1)), 1)];
+est_alpha = [est_alpha; estimated_alphas(:, end)];
+est_error = [est_error; estimated_error_cyclic(:, end)];
 end
 figure(fig_periodic_fisher_scorings); hold on;
 stem(mean(est_alphas_mean,1), mean(est_errors_mean,1), 'o');
@@ -88,10 +88,10 @@ est_error = [];
 
 for i=1:length(original_fisher_scorings)
 load(getFullDir(original_fisher_scorings(i)));
-est_alphas_mean = [est_alphas_mean; mean(estimated_alphas(1:max(1, end-1), :), 1)];
-est_errors_mean = [est_errors_mean; mean(estimated_error_cyclic(1:max(1, end-1), :), 1)];
-est_alpha = [est_alpha, estimated_alphas(end)];
-est_error = [est_error, estimated_error_cyclic(end)];
+est_alphas_mean = [est_alphas_mean; mean(estimated_alphas(:, 1:max(1, end-1)), 1)];
+est_errors_mean = [est_errors_mean; mean(estimated_error_cyclic(:, 1:max(1, end-1)), 1)];
+est_alpha = [est_alpha; estimated_alphas(:, end)];
+est_error = [est_error; estimated_error_cyclic(:, end)];
 end
 figure(fig_original_fisher_scorings); hold on;
 stem(mean(est_alphas_mean,1), mean(est_errors_mean,1), 'o');
@@ -111,8 +111,8 @@ fig_periodic_fisher_scorings.WindowState = "maximize";
 fig_original_fisher_scorings.WindowState = "maximize";
 
 if (save_pics)
-for i=1:3
-    name = append("simulation_real_white_1min_", string(i));
+for i=1:4
+    name = append("simulation_real_white_alpha_effect2_", string(i));
     saveas(figure(i),append('./pics/',name),'png')
 end
 end
