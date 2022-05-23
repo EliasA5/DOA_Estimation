@@ -57,7 +57,7 @@ print([str(day) + ': ' + str(nums[i]) for i, day in enumerate(days)])
 inv = read_inventory('GERES.xml')
 
 # save data set in matFiles folder
-matRoot = 'matFiles_240secs'
+matRoot = 'matFiles_16secs'
 try:
     os.mkdir(matRoot)
 except Exception:
@@ -107,8 +107,8 @@ for file in tqdm(files):
     snr = []
 
     # get matches and corresponding info for each file
-    secs_before = 60
-    secs_total = 240
+    secs_before = 4
+    secs_total = 16
     pre = 40*secs_before   # number of samples before the event
     snapshots = 40*secs_total   # number of (time) samples in total
     for arid, time in zip(arrival.ARID, arrival.LDDATE):
@@ -134,7 +134,7 @@ for file in tqdm(files):
                                    UTCDateTime(time) + (snapshots - 1 - pre) / 40)
 
                     if len(cut.data):
-
+                        cut = cut.filter('bandpass', freqmin=1.0, freqmax=3.0)
                         # build sensor map <-> distances (for steering vectors)
                         try: meta = inv.get_channel_metadata(tr.get_id())
                         except Exception: print(tr.get_id())
