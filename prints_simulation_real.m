@@ -7,12 +7,11 @@
 save_pics = false;
 samples_for_mean = 30;
 result_dir = ["./res/"];
-simulation_properties = ["8secs", "middle_8secs", "40secs", "80secs", "240secs"];
+simulation_properties = ["8secs", "middle_8secs", "16secs", "40secs", "80secs", "240secs"];
 getFullDir = @(file) append(file.folder, '\', file.name);
 getInfo = @(error) sprintf("\nmean: %f, std: %f", mean(error), std(error));
 
-fig1=figure;title("SNR histogram");
-histogram(snrs);
+
 
 for simulation_property = simulation_properties
 fig2 = figure;sgtitle(append("error histrograms ", simulation_property));
@@ -62,9 +61,16 @@ end
 fig2.WindowState = "maximize";
 
 end
+
+snrs(snrs>80) = [];
+fig1=figure;sgtitle("SNR histograms");
+subplot(1,2,1);histogram(snrs);xlabel("bin-edges");ylabel("count");title("in abs value");
+subplot(1,2,2);histogram(db(snrs, "power"));xlabel("bin-edges_{db}");ylabel("count");title("in db");
+fig1.WindowState = "maximize";
+
 if (save_pics)
-for i=1:3
-    name = append("simulation_real_white_1min_", string(i));
+for i=1:7
+    name = append("simulation_real_white_timings_", string(i));
     saveas(figure(i),append('./pics/',name),'png')
 end
 end
