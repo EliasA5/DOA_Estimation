@@ -57,7 +57,7 @@ print([str(day) + ': ' + str(nums[i]) for i, day in enumerate(days)])
 inv = read_inventory('GERES.xml')
 
 # save data set in matFiles folder
-matRoot = 'matFiles_16secs'
+matRoot = 'matFiles_filter_3_response_16secs'
 try:
     os.mkdir(matRoot)
 except Exception:
@@ -134,10 +134,12 @@ for file in tqdm(files):
                                    UTCDateTime(time) + (snapshots - 1 - pre) / 40)
 
                     if len(cut.data):
-                        cut = cut.filter('bandpass', freqmin=1.0, freqmax=3.0)
+                        cut = cut.remove_response(inventory = inv, output="vel").filter('bandpass', freqmin=2.0, freqmax=4.0)
                         # build sensor map <-> distances (for steering vectors)
-                        try: meta = inv.get_channel_metadata(tr.get_id())
-                        except Exception: print(tr.get_id())
+                        try:
+                            meta = inv.get_channel_metadata(tr.get_id())
+                        except Exception:
+                            print(tr.get_id())
                         distances[i, :] = [gps2dist_azimuth(ref_sensor['latitude'], ref_sensor['longitude'],
                                                             meta['latitude'], ref_sensor['longitude'])[0],
                                            gps2dist_azimuth(ref_sensor['latitude'], ref_sensor['longitude'],
