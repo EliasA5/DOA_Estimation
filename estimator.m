@@ -53,7 +53,7 @@ switch type
         fun = toMaximizeBeamformer(a, [], X_w, M, P);
     case 'FISHER_SCORING'
         if(strcmp(to_maximize, 'theta'))
-            [~, theta] = Fisher_scoring('',theta_data,R,v0_data,alpha_data,K_1+3*K_3,X_w,iters,step_size,gamma,L,P,a,da,accuracy);
+            [~, theta] = Fisher_scoring('',pi/3,R,v0_data,alpha_data,K_1+3*K_3,X_w,iters,step_size,gamma,L,P,a,da,accuracy);
             alpha = alpha_data;
             v0 = v0_data;
             return
@@ -62,7 +62,7 @@ switch type
         end
     case 'FISHER_SCORING_ORIG'
         if(strcmp(to_maximize, 'theta'))
-            [~, theta] = Fisher_scoring_reg('',theta_data,R,v0_data,alpha_data,K_1+3*K_3,X_w,iters,step_size,gamma,L,P,a,da,accuracy);
+            [~, theta] = Fisher_scoring_reg('',pi/3,R,v0_data,alpha_data,K_1+3*K_3,X_w,iters,step_size,gamma,L,P,a,da,accuracy);
             alpha = alpha_data;
             v0 = v0_data;
             return

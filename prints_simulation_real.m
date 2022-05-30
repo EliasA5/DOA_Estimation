@@ -7,9 +7,9 @@
 save_pics = false;
 samples_for_mean = 30;
 result_dir = ["./res/"];
-simulation_properties = ["8secs", "middle_8secs", "16secs", "40secs", "80secs", "240secs"];
+simulation_properties = ["all_filters"];%["filter_1_response_16secs", "filter_2_response_16secs", "filter_3_response_16secs", "response_16secs"];%["filter_1_16secs", "filter_2_16secs", "filter_3_16secs"];
 getFullDir = @(file) append(file.folder, '\', file.name);
-getInfo = @(error) sprintf("\nmean: %f, std: %f", mean(error), std(error));
+getInfo = @(error) sprintf("\nmean: %f, std: %f", rad2deg(mean(error)), rad2deg(std(error)));
 
 
 

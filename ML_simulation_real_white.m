@@ -1,11 +1,10 @@
-close all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Purpose: runs the ML estimator on real data assuming white noise.
 % Note: Since this simulation assumes white noise we can take Rv to be the
 % identity matrix.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 result_dir = ["./res/"];
-simulation_property = ["8secs", "middle_8secs", "16secs", "40secs", "80secs", "240secs"];
+simulation_property = ["filter_1_response_16secs", "filter_2_response_16secs", "filter_3_response_16secs", "response_16secs"];
 
 for sim_prop = simulation_property
 files = dir(append('./matFiles_' , sim_prop, '/*.mat'));
