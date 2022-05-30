@@ -39,7 +39,7 @@ for i = 1 : iters - 1
     df_theta = sum(2 * real(diag((X_w - Mue)' * Rv_inv * dMue)),1);
     FIM = sum(2 * real(diag(dMue' * Rv_inv * dMue)));
     crb = FIM ^ (-1);
-    pdf(i+1) = log_likelihood(X_w,s,Rv_inv,M,a_f,v_0,alpha,theta_estimate(i+1));
+    pdf(i+1) = log_likelihood(X_w,Rv_inv,M,a_f,v_0,alpha,theta_estimate(i+1), P);
 
     theta_estimate(i+1) = (real(theta_estimate(i) + step_size * crb * df_theta));
 
