@@ -5,5 +5,7 @@ switch(type)
     case 'MSPE'
         err = custom_mod2pi(theta-theta_est).^2;
     case 'MSE'
-        err = (theta - theta_est).^2;
+        err = (theta - theta_est).^2;    
+    case 'MCE'
+        err = (wrapToPi(theta - theta_est).^2);
 end
