@@ -33,7 +33,10 @@ from scipy.io import savemat
 
 from tqdm import tqdm
 
-
+try:
+    os.chdir('./Geres')
+except Exception:
+    pass
 #****************#
 #   load files   #
 #****************#
@@ -53,6 +56,12 @@ print([str(day) + ': ' + str(nums[i]) for i, day in enumerate(days)])
 
 inv = read_inventory('GERES.xml')
 
+# save data set in matFiles folder
+matRoot = 'matFiles_filter_3_response_16secs'
+try:
+    os.mkdir(matRoot)
+except Exception:
+    pass
 
 #****************************#
 #   loop through all files   #
@@ -68,12 +77,13 @@ for file in tqdm(files):
     removed = []
     # delete the sensors with no metadata
     for i, tr in enumerate(stream):
-        try: meta = inv.get_channel_metadata(tr.get_id())
+        try:
+            meta = inv.get_channel_metadata(tr.get_id())
+            removed.append(i)
         except Exception:
             stream.remove(stream[i])
-            removed.append(i)
-    print(removed)
-    print('remaining sensors: ', stream.count())
+    # print(removed)
+    # print('remaining sensors: ', stream.count())
 
     # # remove (sensitivity and) the response of the sensors from the data
     # stream.remove_sensitivity(inv)
@@ -94,10 +104,13 @@ for file in tqdm(files):
     slo = []
     stv = []
     inc = []
+    snr = []
 
     # get matches and corresponding info for each file
-    pre = 40*60   # number of samples before the event
-    snapshots = 40*240   # number of (time) samples in total
+    secs_before = 4
+    secs_total = 16
+    pre = 40*secs_before   # number of samples before the event
+    snapshots = 40*secs_total   # number of (time) samples in total
     for arid, time in zip(arrival.ARID, arrival.LDDATE):
 
         if arid in assoc.ARID.values:
@@ -121,10 +134,12 @@ for file in tqdm(files):
                                    UTCDateTime(time) + (snapshots - 1 - pre) / 40)
 
                     if len(cut.data):
-
+                        cut = cut.remove_response(inventory = inv, output="vel").filter('bandpass', freqmin=2.0, freqmax=4.0)
                         # build sensor map <-> distances (for steering vectors)
-                        try: meta = inv.get_channel_metadata(tr.get_id())
-                        except Exception: print(tr.get_id())
+                        try:
+                            meta = inv.get_channel_metadata(tr.get_id())
+                        except Exception:
+                            print(tr.get_id())
                         distances[i, :] = [gps2dist_azimuth(ref_sensor['latitude'], ref_sensor['longitude'],
                                                             meta['latitude'], ref_sensor['longitude'])[0],
                                            gps2dist_azimuth(ref_sensor['latitude'], ref_sensor['longitude'],
@@ -142,15 +157,9 @@ for file in tqdm(files):
                     slo.append(1/(1000*degrees2kilometers(1/arrival.SLOW[np.where(arrival.ARID == arid)[0]].values)))
                     stv.append(distances)
                     inc.append(arrival.EMA[np.where(assoc.ARID == arid)[0]].values)
+                    snr.append(arrival.SNR[np.where(assoc.ARID == arid)[0]].values)
 
     #print(file, len(doa))
-
-    # save data set in matFiles folder
-    matRoot = 'matFiles2'
-    try:
-        os.mkdir(matRoot)
-    except Exception:
-        pass
 
     mdict = {}
     mdict['data'] = sig
@@ -160,5 +169,6 @@ for file in tqdm(files):
     mdict['slow'] = slo
     mdict['removed'] = removed
     mdict['incidence'] = inc
+    mdict['snr'] = snr
 
     savemat(os.path.join(matRoot,'mdict_' + file[:-7] + '.mat'), mdict)

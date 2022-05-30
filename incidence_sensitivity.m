@@ -1,9 +1,9 @@
 close all
 clc
-%--------------------------------------------------------------------------
-% This scripts tests the sentivity of the MLE and Fisher's scoring
-% to the incidence angle alpha for white noise and colored noise
-%--------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: This scripts tests the sentivity of the MLE and Fisher's scoring
+% to the incidence angle alpha for white noise and colored noise.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Initialization
 
 M = 100;                          

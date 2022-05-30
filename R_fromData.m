@@ -1,3 +1,8 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: this fucntion calculates the covariance matrix using MSE
+% estimator from the data supplied by x, preferably x has large amounts of
+% data for better estimation of the matrix
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [Rv] = R_fromData(x)
 x = double(x);
 col = x(:,1);

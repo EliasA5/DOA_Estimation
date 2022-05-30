@@ -1,9 +1,23 @@
 function [a, da] = model(r_m, K_1, K_3, w)
-%gets matrix of locations r_m, each row is a 3 elements vector
-%correcsponding to a sensor location
-%K_1 the number of 1d sensors
-%k_2 the number of 3d sensors
-%w is a vector of frequencies
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: calculates and returns function that model our problem.
+
+% Inputs:
+%   r_m: The distances matrix of size (3,K), where K is the number of
+%   Sensors.
+%   K_1: The number of 1d sensors.
+%   k_2: The number of 3d sensors.
+%   w: Is a vector of frequencies.
+
+% Returns:
+% a: a function that calculates the steering vector.
+% da: a function that calculates the derivative of the steering vector.
+% Inputs:
+%   m: the index of the frequency in the w input vector.
+%   theta: doa angle.
+%   alpha: incidence angle.
+%   v_0: the speed of the wave. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 e_u = @(theta,alpha) [sin(theta)*sin(alpha); cos(theta)*sin(alpha); cos(alpha)];
 e_z = @(theta, alpha) cos(alpha);
 u = @(theta, alpha, v_0) 1/v_0 * e_u(theta,alpha);

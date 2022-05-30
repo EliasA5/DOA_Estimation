@@ -1,3 +1,16 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: This function returns the function that we need to maximize for
+% the beamformer estimator, feed it's output to MaximizeTheta.
+% Inputs:
+%   a: The function used to calculate the model, can be obtained from
+%   model.m file.
+%   R: The covariance matrix that is not used, but kept in the input for
+%   compliance with functions of the same purpose.
+%   X_w: The signal in the frequency domain.
+%   M: The number of frequencies, in other files this is given by L.
+%   P: The number of segments.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function [fun] = toMaximizeBeamformer(a, R, X_w, M, P)
     [~,K,~] = size(X_w);
     X_temp = squeeze(X_w(1,:,:));

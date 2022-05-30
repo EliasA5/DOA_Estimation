@@ -1,6 +1,10 @@
 close all
 clc
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: runs the ML estimator on real data assuming colored noise.
+% DUE TO MISSING SENSOR DATA RV CANNOT BE ESTIMATED REIALABLY WITH EASY
+% INDEXING SO THIS FUNCTION DOES NOT WORK.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 oldpath = addpath('./LIBRA', '-end');
 files = dir('./matFiles/*.mat');
 Rv = load("Rv.mat");

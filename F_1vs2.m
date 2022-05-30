@@ -1,10 +1,11 @@
 close all
 clear all
 clc
-% this script runs simulations to show the difference in perfomances for
-% the regular Fisher method and the periodic Fisher method
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose: This script runs simulations to show the difference in
+% perfomance for the regular Fisher method and the periodic Fisher method.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%--------------------------------------------------------------------------
 %% Initialization
 
 M = 100;                          
