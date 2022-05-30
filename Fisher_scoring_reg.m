@@ -33,7 +33,7 @@ for i = 1 : iters - 1
     
     Up = diag(A' * Rv_inv * X_w);
     Down = diag(A' * Rv_inv * A);
-    s = (Up ./ Down).';
+    s = (Up ./ Down).' / P;
     Mue = A .* s;
     dMue = dA .* s;
     df_theta = sum(2 * real(diag((X_w - Mue)' * Rv_inv * dMue)),1);
